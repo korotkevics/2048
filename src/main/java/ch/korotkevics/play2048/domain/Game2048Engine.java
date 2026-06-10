@@ -1,4 +1,4 @@
-package ch.korotkevics.play2048;
+package ch.korotkevics.play2048.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.TreeMap;
 
 public final class Game2048Engine {
 
@@ -110,21 +109,20 @@ public final class Game2048Engine {
     }
 
     public boolean isGameOver() {
-        if (emptyCells().size() > 0) {
-            return false;
-        }
-
-        for (int row = 0; row < size; row++) {
-            for (int column = 0; column < size; column++) {
-                if (row + 1 < size && board[row][column] == board[row + 1][column]) {
-                    return false;
-                }
-                if (column + 1 < size && board[row][column] == board[row][column + 1]) {
-                    return false;
+        if (emptyCells().isEmpty()) {
+            for (int row = 0; row < size; row++) {
+                for (int column = 0; column < size; column++) {
+                    if (row + 1 < size && board[row][column] == board[row + 1][column]) {
+                        return false;
+                    }
+                    if (column + 1 < size && board[row][column] == board[row][column + 1]) {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void addRandomTile() {
@@ -255,99 +253,9 @@ public final class Game2048Engine {
         }
     }
 
-    public enum Direction {
-        UP,
-        RIGHT,
-        DOWN,
-        LEFT
-    }
-
-    public record MoveResult(
-            Direction direction,
-            boolean moved,
-            int scoreGained,
-            int score,
-            boolean gameOver,
-            boolean won,
-            int[][] board
-    ) {
-        public MoveResult {
-            board = copyOf(board);
-        }
-    }
-
     private record Cell(int row, int column) {
     }
 
     private record ProcessedLine(int[] values, int scoreGained) {
-    }
-
-    public static final class GameSettings {
-        private final TileSpawnConfiguration spawnConfiguration;
-        private int initialTileCount;
-
-        public GameSettings() {
-            this.spawnConfiguration = new TileSpawnConfiguration();
-            this.initialTileCount = 4;
-        }
-
-        public TileSpawnConfiguration getSpawnConfiguration() {
-            return spawnConfiguration;
-        }
-
-        public synchronized int getInitialTileCount() {
-            return initialTileCount;
-        }
-
-        public synchronized void setInitialTileCount(int initialTileCount) {
-            if (initialTileCount < 1) {
-                throw new IllegalArgumentException("initialTileCount must be at least 1");
-            }
-            this.initialTileCount = initialTileCount;
-        }
-
-        public static final class TileSpawnConfiguration {
-            private final Map<Integer, Double> probabilities = new TreeMap<>();
-
-            public TileSpawnConfiguration() {
-                probabilities.put(2, 0.9);
-                probabilities.put(4, 0.1);
-            }
-
-            public synchronized Map<Integer, Double> getProbabilities() {
-                return new TreeMap<>(probabilities);
-            }
-
-            public synchronized void update(int value, double probability) {
-                validateValue(value);
-                if (probability < 0 || probability > 1.0) {
-                    throw new IllegalArgumentException("probability must be between 0 and 1");
-                }
-                probabilities.put(value, probability);
-            }
-
-            public synchronized void remove(int value) {
-                if (probabilities.size() <= 1 && probabilities.containsKey(value)) {
-                    throw new IllegalStateException("At least one setting must remain");
-                }
-                probabilities.remove(value);
-            }
-
-            public synchronized void validate() {
-                if (probabilities.isEmpty()) {
-                    throw new IllegalStateException("At least one setting must remain");
-                }
-                double sum = probabilities.values().stream().mapToDouble(Double::doubleValue).sum();
-                if (Math.abs(sum - 1.0) > 1e-9) {
-                    throw new IllegalStateException("Sum of probabilities must be 1.0, currently: " + sum);
-                }
-            }
-
-            private void validateValue(int value) {
-                if (value < 2 || value > 2048 || (value & (value - 1)) != 0) {
-                    throw new IllegalArgumentException("value must be a power of two between 2 and 2048");
-                }
-            }
-        }
     }
 }

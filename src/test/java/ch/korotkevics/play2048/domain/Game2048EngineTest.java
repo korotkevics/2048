@@ -1,4 +1,4 @@
-package ch.korotkevics.play2048;
+package ch.korotkevics.play2048.domain;
 
 import org.testng.annotations.Test;
 
@@ -6,9 +6,9 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
 
-import static ch.korotkevics.play2048.Game2048Engine.Direction.DOWN;
-import static ch.korotkevics.play2048.Game2048Engine.Direction.LEFT;
-import static ch.korotkevics.play2048.Game2048Engine.Direction.RIGHT;
+import static ch.korotkevics.play2048.domain.Direction.DOWN;
+import static ch.korotkevics.play2048.domain.Direction.LEFT;
+import static ch.korotkevics.play2048.domain.Direction.RIGHT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -23,7 +23,7 @@ public class Game2048EngineTest {
                 {0, 0, 0, 0}
         }, 0, new PredictableRandom(new int[]{11}, new double[]{0.1}));
 
-        Game2048Engine.MoveResult result = engine.move(LEFT);
+        MoveResult result = engine.move(LEFT);
 
         assertThat(result.moved()).isTrue();
         assertThat(result.scoreGained()).isEqualTo(16);
@@ -46,7 +46,7 @@ public class Game2048EngineTest {
                 {0, 0, 0, 0}
         }, 10, new PredictableRandom(new int[]{11}, new double[]{0.95}));
 
-        Game2048Engine.MoveResult result = engine.move(RIGHT);
+        MoveResult result = engine.move(RIGHT);
 
         assertThat(result.scoreGained()).isEqualTo(4);
         assertThat(result.score()).isEqualTo(14);
@@ -67,7 +67,7 @@ public class Game2048EngineTest {
                 {4, 0, 0, 0}
         }, 0, new PredictableRandom(new int[]{0}, new double[]{0.1}));
 
-        Game2048Engine.MoveResult result = engine.move(DOWN);
+        MoveResult result = engine.move(DOWN);
 
         assertThat(result.scoreGained()).isEqualTo(20);
         assertThat(result.board()).isDeepEqualTo(new int[][]{
@@ -88,7 +88,7 @@ public class Game2048EngineTest {
         };
         Game2048Engine engine = Game2048Engine.from(board, 40, new PredictableRandom(new int[]{0}, new double[]{0.1}));
 
-        Game2048Engine.MoveResult result = engine.move(LEFT);
+        MoveResult result = engine.move(LEFT);
 
         assertThat(result.moved()).isFalse();
         assertThat(result.scoreGained()).isZero();
@@ -118,7 +118,7 @@ public class Game2048EngineTest {
                 {0, 0, 0, 0}
         }, 0, new PredictableRandom(new int[]{0}, new double[]{0.1}));
 
-        Game2048Engine.MoveResult result = engine.move(LEFT);
+        MoveResult result = engine.move(LEFT);
 
         assertThat(result.won()).isTrue();
         assertThat(engine.isWon()).isTrue();
@@ -174,8 +174,8 @@ public class Game2048EngineTest {
 
     @Test
     public void customTileSpawnConfigurationCanBeUsed() {
-        Game2048Engine.GameSettings settings = new Game2048Engine.GameSettings();
-        Game2048Engine.GameSettings.TileSpawnConfiguration config = settings.getSpawnConfiguration();
+        GameSettings settings = new GameSettings();
+        GameSettings.TileSpawnConfiguration config = settings.getSpawnConfiguration();
         config.update(8, 1.0);
         config.remove(2);
         config.remove(4);
@@ -199,8 +199,8 @@ public class Game2048EngineTest {
 
     @Test
     public void tileSpawnConfigurationValidation() {
-        Game2048Engine.GameSettings settings = new Game2048Engine.GameSettings();
-        Game2048Engine.GameSettings.TileSpawnConfiguration config = settings.getSpawnConfiguration();
+        GameSettings settings = new GameSettings();
+        GameSettings.TileSpawnConfiguration config = settings.getSpawnConfiguration();
 
         assertThatThrownBy(() -> config.update(3, 0.5))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -222,7 +222,7 @@ public class Game2048EngineTest {
 
     @Test
     public void customInitialTileCount() {
-        Game2048Engine.GameSettings settings = new Game2048Engine.GameSettings();
+        GameSettings settings = new GameSettings();
         settings.setInitialTileCount(1);
         Game2048Engine engine = Game2048Engine.newGame(4, new PredictableRandom(new int[]{5}, new double[]{}), settings);
 
