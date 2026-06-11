@@ -30,7 +30,7 @@ public final class DeterministicAiFacade implements MoveSuggester {
 
     private MoveEvaluation evaluateMove(BoardState state, Direction direction) {
         Game2048Engine engine = Game2048Engine.from(state.grid());
-        MoveResult result = engine.move(direction);
+        MoveResult result = engine.simulateMove(direction);
 
         if (!result.moved()) {
             return new MoveEvaluation(direction, false, 0);

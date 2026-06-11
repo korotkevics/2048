@@ -56,6 +56,25 @@ public final class Game2048Engine {
     }
 
     public MoveResult move(Direction direction) {
+        MoveResult result = simulateMove(direction);
+        if (result.moved()) {
+            Board boardWithTile = tileSpawner.spawnRandomTile(result.nextEngine().board, settings, random);
+            Game2048Engine finalEngine = new Game2048Engine(boardWithTile, result.score(), random, settings);
+            return new MoveResult(
+                    direction,
+                    true,
+                    result.scoreGained(),
+                    result.score(),
+                    finalEngine.isGameOver(),
+                    finalEngine.isWon(),
+                    finalEngine.boardState(),
+                    finalEngine
+            );
+        }
+        return result;
+    }
+
+    public MoveResult simulateMove(Direction direction) {
         Objects.requireNonNull(direction, "direction must not be null");
 
         int scoreGained = 0;
@@ -74,10 +93,6 @@ public final class Game2048Engine {
         }
 
         int finalScore = score + scoreGained;
-        if (moved) {
-            currentBoard = tileSpawner.spawnRandomTile(currentBoard, settings, random);
-        }
-
         Game2048Engine nextEngine = new Game2048Engine(currentBoard, finalScore, random, settings);
 
         return new MoveResult(
@@ -87,7 +102,8 @@ public final class Game2048Engine {
                 finalScore,
                 nextEngine.isGameOver(),
                 nextEngine.isWon(),
-                nextEngine.boardState()
+                nextEngine.boardState(),
+                nextEngine
         );
     }
 

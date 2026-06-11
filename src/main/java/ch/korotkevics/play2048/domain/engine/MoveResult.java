@@ -10,6 +10,7 @@ public record MoveResult(
         int score,
         boolean gameOver,
         boolean won,
-        BoardState boardState
+        BoardState boardState,
+        Game2048Engine nextEngine
 ) {
 }
