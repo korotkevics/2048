@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public final class TileSpawner {
+final class TileSpawner {
 
-    public void spawnInitialTiles(Board board, GameSettings settings, Random random) {
+    void spawnInitialTiles(Board board, GameSettings settings, Random random) {
         for (int i = 0; i < settings.getInitialTileCount(); i++) {
             spawnTile(board, 2, random);
         }
     }
 
-    public void spawnRandomTile(Board board, GameSettings settings, Random random) {
+    void spawnRandomTile(Board board, GameSettings settings, Random random) {
         Map<Integer, Double> probs = settings.getSpawnConfiguration().getProbabilities();
         if (probs.isEmpty()) {
             spawnTile(board, 2, random);

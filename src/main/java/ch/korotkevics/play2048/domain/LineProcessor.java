@@ -1,8 +1,8 @@
 package ch.korotkevics.play2048.domain;
 
-public final class LineProcessor {
+final class LineProcessor {
 
-    public ProcessedLine process(int[] line) {
+    ProcessedLine process(int[] line) {
         int size = line.length;
         int[] result = new int[size];
         int resultIndex = 0;
@@ -38,6 +38,6 @@ public final class LineProcessor {
         return -1;
     }
 
-    public record ProcessedLine(int[] values, int scoreGained) {
+    record ProcessedLine(int[] values, int scoreGained) {
     }
 }

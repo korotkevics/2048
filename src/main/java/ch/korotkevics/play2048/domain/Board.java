@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public final class Board {
+final class Board {
     private final int size;
     private final int[][] grid;
 
-    public Board(int size) {
+    Board(int size) {
         if (size < 2) {
             throw new IllegalArgumentException("size must be at least 2");
         }
@@ -17,29 +17,29 @@ public final class Board {
         this.grid = new int[size][size];
     }
 
-    public Board(int[][] grid) {
+    Board(int[][] grid) {
         validateBoard(grid);
         this.size = grid.length;
         this.grid = copyOf(grid);
     }
 
-    public int size() {
+    int size() {
         return size;
     }
 
-    public int[][] grid() {
+    int[][] grid() {
         return copyOf(grid);
     }
 
-    public int getValue(int row, int column) {
+    int getValue(int row, int column) {
         return grid[row][column];
     }
 
-    public void setValue(int row, int column, int value) {
+    void setValue(int row, int column, int value) {
         grid[row][column] = value;
     }
 
-    public List<Cell> emptyCells() {
+    List<Cell> emptyCells() {
         List<Cell> emptyCells = new ArrayList<>();
         for (int row = 0; row < size; row++) {
             for (int column = 0; column < size; column++) {
@@ -51,7 +51,7 @@ public final class Board {
         return emptyCells;
     }
 
-    public int[] getLine(int index, Direction direction) {
+    int[] getLine(int index, Direction direction) {
         int[] line = new int[size];
         for (int offset = 0; offset < size; offset++) {
             Cell cell = cellFor(index, offset, direction);
@@ -60,14 +60,14 @@ public final class Board {
         return line;
     }
 
-    public void setLine(int index, Direction direction, int[] values) {
+    void setLine(int index, Direction direction, int[] values) {
         for (int offset = 0; offset < size; offset++) {
             Cell cell = cellFor(index, offset, direction);
             grid[cell.row()][cell.column()] = values[offset];
         }
     }
 
-    public boolean hasTileWithValue(int target) {
+    boolean hasTileWithValue(int target) {
         for (int[] row : grid) {
             for (int value : row) {
                 if (value >= target) {
@@ -78,7 +78,7 @@ public final class Board {
         return false;
     }
 
-    public boolean isGameOver() {
+    boolean isGameOver() {
         if (!emptyCells().isEmpty()) {
             return false;
         }
@@ -131,6 +131,6 @@ public final class Board {
         }
     }
 
-    public record Cell(int row, int column) {
+    record Cell(int row, int column) {
     }
 }
