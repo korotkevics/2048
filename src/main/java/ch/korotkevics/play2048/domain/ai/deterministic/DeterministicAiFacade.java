@@ -1,5 +1,6 @@
 package ch.korotkevics.play2048.domain.ai.deterministic;
 
+import ch.korotkevics.play2048.domain.ai.MoveSuggester;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import ch.korotkevics.play2048.domain.engine.Game2048Engine;
@@ -9,7 +10,7 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public final class DeterministicAiFacade {
+public final class DeterministicAiFacade implements MoveSuggester {
 
     /**
      * Suggests the best next move based on a heuristic evaluation of the board.
