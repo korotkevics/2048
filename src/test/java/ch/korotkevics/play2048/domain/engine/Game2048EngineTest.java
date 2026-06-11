@@ -34,7 +34,15 @@ public class Game2048EngineTest {
                 {0, 0, 0, 0},
                 {0, 0, 0, 2}
         });
-        assertThat(engine.score()).isEqualTo(16);
+        
+        // Assert engine was not mutated
+        assertThat(engine.score()).isEqualTo(0);
+        assertThat(engine.board()).isDeepEqualTo(new int[][]{
+                {2, 2, 2, 2},
+                {4, 0, 4, 4},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+        });
     }
 
     @Test
@@ -121,7 +129,6 @@ public class Game2048EngineTest {
         MoveResult result = engine.move(LEFT);
 
         assertThat(result.won()).isTrue();
-        assertThat(engine.isWon()).isTrue();
     }
 
     @Test
@@ -192,9 +199,9 @@ public class Game2048EngineTest {
         assertThat(engine.board()[0][2]).isEqualTo(2);
         assertThat(engine.board()[0][3]).isEqualTo(2);
 
-        engine.move(LEFT);
+        MoveResult result = engine.move(LEFT);
         // Row 0: [4, 4, 0, 0]. NextInt(14) with value 0 picks (0,2).
-        assertThat(engine.board()[0][2]).isEqualTo(8);
+        assertThat(result.boardState().grid()[0][2]).isEqualTo(8);
     }
 
     @Test

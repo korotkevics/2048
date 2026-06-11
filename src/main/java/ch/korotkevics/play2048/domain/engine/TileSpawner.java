@@ -6,17 +6,18 @@ import java.util.Random;
 
 final class TileSpawner {
 
-    void spawnInitialTiles(Board board, GameSettings settings, Random random) {
+    Board spawnInitialTiles(Board board, GameSettings settings, Random random) {
+        Board current = board;
         for (int i = 0; i < settings.getInitialTileCount(); i++) {
-            spawnTile(board, 2, random);
+            current = spawnTile(current, 2, random);
         }
+        return current;
     }
 
-    void spawnRandomTile(Board board, GameSettings settings, Random random) {
+    Board spawnRandomTile(Board board, GameSettings settings, Random random) {
         Map<Integer, Double> probs = settings.getSpawnConfiguration().getProbabilities();
         if (probs.isEmpty()) {
-            spawnTile(board, 2, random);
-            return;
+            return spawnTile(board, 2, random);
         }
 
         double r = random.nextDouble();
@@ -29,16 +30,16 @@ final class TileSpawner {
                 break;
             }
         }
-        spawnTile(board, selectedValue, random);
+        return spawnTile(board, selectedValue, random);
     }
 
-    private void spawnTile(Board board, int value, Random random) {
+    private Board spawnTile(Board board, int value, Random random) {
         List<Board.Cell> emptyCells = board.emptyCells();
         if (emptyCells.isEmpty()) {
-            return;
+            return board;
         }
 
         Board.Cell cell = emptyCells.get(random.nextInt(emptyCells.size()));
-        board.setValue(cell.row(), cell.column(), value);
+        return board.withValue(cell.row(), cell.column(), value);
     }
 }

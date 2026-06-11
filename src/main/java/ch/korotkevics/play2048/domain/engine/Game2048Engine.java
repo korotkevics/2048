@@ -37,9 +37,10 @@ public final class Game2048Engine {
     }
 
     public static Game2048Engine newGame(int size, Random random, GameSettings settings) {
-        Game2048Engine engine = new Game2048Engine(new Board(size), 0, random, settings);
-        engine.tileSpawner.spawnInitialTiles(engine.board, settings, random);
-        return engine;
+        Board initialBoard = new Board(size);
+        TileSpawner spawner = new TileSpawner();
+        Board seededBoard = spawner.spawnInitialTiles(initialBoard, settings, random);
+        return new Game2048Engine(seededBoard, 0, random, settings);
     }
 
     public static Game2048Engine from(int[][] grid) {
@@ -60,30 +61,33 @@ public final class Game2048Engine {
         int scoreGained = 0;
         boolean moved = false;
         int size = board.size();
+        Board currentBoard = board;
 
         for (int index = 0; index < size; index++) {
-            int[] originalLine = board.getLine(index, direction);
+            int[] originalLine = currentBoard.getLine(index, direction);
             LineProcessor.ProcessedLine processedLine = lineProcessor.process(originalLine);
             if (!Arrays.equals(originalLine, processedLine.values())) {
                 moved = true;
-                board.setLine(index, direction, processedLine.values());
+                currentBoard = currentBoard.withLine(index, direction, processedLine.values());
             }
             scoreGained += processedLine.scoreGained();
         }
 
+        int finalScore = score + scoreGained;
         if (moved) {
-            score += scoreGained;
-            tileSpawner.spawnRandomTile(board, settings, random);
+            currentBoard = tileSpawner.spawnRandomTile(currentBoard, settings, random);
         }
+
+        Game2048Engine nextEngine = new Game2048Engine(currentBoard, finalScore, random, settings);
 
         return new MoveResult(
                 direction,
                 moved,
                 scoreGained,
-                score,
-                isGameOver(),
-                isWon(),
-                boardState()
+                finalScore,
+                nextEngine.isGameOver(),
+                nextEngine.isWon(),
+                nextEngine.boardState()
         );
     }
 

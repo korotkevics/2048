@@ -63,12 +63,11 @@ public class BoardTest {
         });
         assertThat(board.isGameOver()).isTrue();
 
-        board.setValue(0, 0, 0);
-        assertThat(board.isGameOver()).isFalse();
+        Board updated = board.withValue(0, 0, 0);
+        assertThat(updated.isGameOver()).isFalse();
 
-        board.setValue(0, 0, 2);
-        board.setValue(0, 1, 2);
-        assertThat(board.isGameOver()).isFalse();
+        Board horizontalMerge = board.withValue(0, 0, 2).withValue(0, 1, 2);
+        assertThat(horizontalMerge.isGameOver()).isFalse();
     }
 
     @Test
@@ -78,5 +77,17 @@ public class BoardTest {
         
         assertThatThrownBy(() -> new Board(new int[][]{{2, 2}, {2}}))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void immutability() {
+        Board board = new Board(new int[][]{
+                {2, 0},
+                {0, 0}
+        });
+        Board next = board.withValue(0, 1, 4);
+        
+        assertThat(board.getValue(0, 1)).isEqualTo(0);
+        assertThat(next.getValue(0, 1)).isEqualTo(4);
     }
 }

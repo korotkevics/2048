@@ -35,10 +35,6 @@ final class Board {
         return grid[row][column];
     }
 
-    void setValue(int row, int column, int value) {
-        grid[row][column] = value;
-    }
-
     List<Cell> emptyCells() {
         List<Cell> emptyCells = new ArrayList<>();
         for (int row = 0; row < size; row++) {
@@ -60,11 +56,19 @@ final class Board {
         return line;
     }
 
-    void setLine(int index, Direction direction, int[] values) {
+    Board withValue(int row, int column, int value) {
+        int[][] newGrid = grid();
+        newGrid[row][column] = value;
+        return new Board(newGrid);
+    }
+
+    Board withLine(int index, Direction direction, int[] values) {
+        int[][] newGrid = grid();
         for (int offset = 0; offset < size; offset++) {
             Cell cell = cellFor(index, offset, direction);
-            grid[cell.row()][cell.column()] = values[offset];
+            newGrid[cell.row()][cell.column()] = values[offset];
         }
+        return new Board(newGrid);
     }
 
     boolean hasTileWithValue(int target) {
