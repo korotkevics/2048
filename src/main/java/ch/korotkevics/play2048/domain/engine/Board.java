@@ -1,4 +1,4 @@
-package ch.korotkevics.play2048.domain;
+package ch.korotkevics.play2048.domain.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package ch.korotkevics.play2048.domain;
+package ch.korotkevics.play2048.domain.engine;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -83,12 +83,16 @@ public final class Game2048Engine {
                 score,
                 isGameOver(),
                 isWon(),
-                board()
+                boardState()
         );
     }
 
     public int[][] board() {
         return board.grid();
+    }
+
+    public BoardState boardState() {
+        return new BoardState(board.grid());
     }
 
     public int score() {

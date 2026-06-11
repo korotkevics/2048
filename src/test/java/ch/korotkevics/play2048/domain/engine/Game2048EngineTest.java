@@ -1,4 +1,4 @@
-package ch.korotkevics.play2048.domain;
+package ch.korotkevics.play2048.domain.engine;
 
 import org.testng.annotations.Test;
 
@@ -6,9 +6,9 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
 
-import static ch.korotkevics.play2048.domain.Direction.DOWN;
-import static ch.korotkevics.play2048.domain.Direction.LEFT;
-import static ch.korotkevics.play2048.domain.Direction.RIGHT;
+import static ch.korotkevics.play2048.domain.engine.Direction.DOWN;
+import static ch.korotkevics.play2048.domain.engine.Direction.LEFT;
+import static ch.korotkevics.play2048.domain.engine.Direction.RIGHT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -28,7 +28,7 @@ public class Game2048EngineTest {
         assertThat(result.moved()).isTrue();
         assertThat(result.scoreGained()).isEqualTo(16);
         assertThat(result.score()).isEqualTo(16);
-        assertThat(result.board()).isDeepEqualTo(new int[][]{
+        assertThat(result.boardState().grid()).isDeepEqualTo(new int[][]{
                 {4, 4, 0, 0},
                 {8, 4, 0, 0},
                 {0, 0, 0, 0},
@@ -50,7 +50,7 @@ public class Game2048EngineTest {
 
         assertThat(result.scoreGained()).isEqualTo(4);
         assertThat(result.score()).isEqualTo(14);
-        assertThat(result.board()).isDeepEqualTo(new int[][]{
+        assertThat(result.boardState().grid()).isDeepEqualTo(new int[][]{
                 {0, 0, 4, 4},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
@@ -70,7 +70,7 @@ public class Game2048EngineTest {
         MoveResult result = engine.move(DOWN);
 
         assertThat(result.scoreGained()).isEqualTo(20);
-        assertThat(result.board()).isDeepEqualTo(new int[][]{
+        assertThat(result.boardState().grid()).isDeepEqualTo(new int[][]{
                 {2, 0, 0, 0},
                 {0, 0, 0, 0},
                 {4, 0, 0, 0},
@@ -94,7 +94,7 @@ public class Game2048EngineTest {
         assertThat(result.scoreGained()).isZero();
         assertThat(result.score()).isEqualTo(40);
         assertThat(result.gameOver()).isTrue();
-        assertThat(result.board()).isDeepEqualTo(board);
+        assertThat(result.boardState().grid()).isDeepEqualTo(board);
     }
 
     @Test
