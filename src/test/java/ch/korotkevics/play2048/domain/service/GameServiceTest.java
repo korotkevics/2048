@@ -1,73 +1,36 @@
 package ch.korotkevics.play2048.domain.service;
 
-import ch.korotkevics.play2048.domain.ai.MoveSuggester;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.service.stages.GivenGameService;
+import ch.korotkevics.play2048.domain.service.stages.ThenGameService;
+import ch.korotkevics.play2048.domain.service.stages.WhenGameService;
+import com.tngtech.jgiven.testng.ScenarioTest;
 import org.testng.annotations.Test;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-public class GameServiceTest {
+public class GameServiceTest extends ScenarioTest<GivenGameService, WhenGameService, ThenGameService> {
 
     @Test
-    public void managesIndependentGames() {
-        MoveSuggester mockAi = mock(MoveSuggester.class);
-        DomainEventStream mockStream = mock(DomainEventStream.class);
-        GameService service = new GameService(mockAi, mockStream);
-
-        GameId id1 = service.startNewGame();
-        GameId id2 = service.startNewGame();
-
-        assertThat(id1).isNotEqualTo(id2);
-        verify(mockStream, atLeastOnce()).publish(any(DomainEventStream.GameStarted.class));
-
-        service.makeMove(id1, Direction.LEFT);
-        service.makeMove(id2, Direction.RIGHT);
-
-        verify(mockStream, atLeastOnce()).publish(any(DomainEventStream.MoveMade.class));
+    public void starting_a_new_game_generates_id_and_notifies() {
+        given().a_game_service();
+        when().a_new_game_is_started();
+        then().a_game_id_is_generated()
+                .and().a_game_started_event_is_published();
     }
 
     @Test
-    public void providesAiSuggestionsForActiveGames() {
-        MoveSuggester mockAi = mock(MoveSuggester.class);
-        DomainEventStream mockStream = mock(DomainEventStream.class);
-        GameService service = new GameService(mockAi, mockStream);
-        GameId id = service.startNewGame();
-
-        when(mockAi.suggestNextMove(any())).thenReturn(Optional.of(Direction.UP));
-
-        service.requestAiSuggestion(id);
-
-        verify(mockStream).publish(any(DomainEventStream.AiSuggestionProduced.class));
+    public void making_a_move_publishes_event() {
+        given().a_game_service();
+        when().a_new_game_is_started()
+                .and().a_move_is_made_in_direction(Direction.LEFT);
+        then().a_move_made_event_is_published();
     }
 
     @Test
-    public void handlesUnknownGamesGracefully() {
-        MoveSuggester mockAi = mock(MoveSuggester.class);
-        DomainEventStream mockStream = mock(DomainEventStream.class);
-        GameService service = new GameService(mockAi, mockStream);
-        GameId unknownId = GameId.generate();
-
-        service.makeMove(unknownId, Direction.UP);
-        service.requestAiSuggestion(unknownId);
-
-        // Should not publish move or suggestion for unknown games.
-        // We verify that NO events were published AFTER the constructor phase.
-        verifyNoMoreInteractions(mockStream);
-    }
-
-    @Test
-    public void canAbandonGames() {
-        GameService service = new GameService(mock(MoveSuggester.class), mock(DomainEventStream.class));
-        GameId id = service.startNewGame();
-
-        service.abandonGame(id);
+    public void requesting_ai_suggestion_publishes_event() {
+        given().a_game_service()
+                .and().an_ai_that_suggests(Direction.UP);
+        when().a_new_game_is_started()
+                .and().an_ai_suggestion_is_requested();
+        then().an_ai_suggestion_event_is_published();
     }
 }

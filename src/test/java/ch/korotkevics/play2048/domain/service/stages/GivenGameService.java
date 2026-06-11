@@ -1,0 +1,39 @@
+package ch.korotkevics.play2048.domain.service.stages;
+
+import ch.korotkevics.play2048.domain.ai.MoveSuggester;
+import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.service.DomainEventStream;
+import ch.korotkevics.play2048.domain.service.GameId;
+import ch.korotkevics.play2048.domain.service.GameService;
+import com.tngtech.jgiven.Stage;
+import com.tngtech.jgiven.annotation.ProvidedScenarioState;
+import org.mockito.Mockito;
+
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+
+public class GivenGameService extends Stage<GivenGameService> {
+
+    @ProvidedScenarioState
+    private GameService gameService;
+
+    @ProvidedScenarioState
+    private DomainEventStream eventStream;
+
+    @ProvidedScenarioState
+    private MoveSuggester aiFacade;
+
+    public GivenGameService a_game_service() {
+        eventStream = mock(DomainEventStream.class);
+        aiFacade = mock(MoveSuggester.class);
+        gameService = new GameService(aiFacade, eventStream);
+        return this;
+    }
+
+    public GivenGameService an_ai_that_suggests(Direction direction) {
+        Mockito.when(aiFacade.suggestNextMove(any())).thenReturn(Optional.of(direction));
+        return this;
+    }
+}

@@ -8,8 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class OllamaLlmAdapterTest {
 
     @Test
-    public void adapterReturnsEmptyOptionalForNow() {
-        OllamaLlmAdapter adapter = new OllamaLlmAdapter("http://localhost:11434", "llama3");
+    public void adapterHandlesMissingConnectionGracefully() {
+        // This is more of a behavioral check that it doesn't crash
+        OllamaLlmAdapter adapter = new OllamaLlmAdapter("http://non-existent-host:1234", "llama3");
         BoardState state = new BoardState(new int[4][4]);
 
         assertThat(adapter.askForMove(state)).isEmpty();

@@ -1,27 +1,46 @@
 package ch.korotkevics.play2048.domain.ai.llm;
 
+import ch.korotkevics.play2048.domain.ai.MoveSuggester;
+import ch.korotkevics.play2048.domain.ai.stages.ThenAi;
+import ch.korotkevics.play2048.domain.ai.stages.WhenAi;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import com.tngtech.jgiven.Stage;
+import com.tngtech.jgiven.annotation.ProvidedScenarioState;
+import com.tngtech.jgiven.testng.ScenarioTest;
 import org.testng.annotations.Test;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LlmAiFacadeTest {
+public class LlmAiFacadeTest extends ScenarioTest<LlmAiFacadeTest.GivenLlmAi, WhenAi, ThenAi> {
 
     @Test
-    public void suggestNextMoveDelegatesToLlmClient() {
-        LlmClient mockClient = mock(LlmClient.class);
-        LlmAiFacade facade = new LlmAiFacade(mockClient);
-        BoardState state = new BoardState(new int[4][4]);
-        
-        when(mockClient.askForMove(state)).thenReturn(Optional.of(Direction.UP));
+    public void llm_ai_delegates_to_client() {
+        given().a_llm_ai_with_client_that_suggests(Direction.RIGHT)
+                .and().a_board_with_grid(new int[4][4]);
+        when().the_ai_is_asked_for_a_move();
+        then().the_suggested_direction_is(Direction.RIGHT);
+    }
 
-        Optional<Direction> suggestion = facade.suggestNextMove(state);
+    public static class GivenLlmAi extends Stage<GivenLlmAi> {
+        @ProvidedScenarioState
+        private MoveSuggester ai;
+        @ProvidedScenarioState
+        private BoardState boardState;
 
-        assertThat(suggestion).contains(Direction.UP);
+        public GivenLlmAi a_llm_ai_with_client_that_suggests(Direction direction) {
+            LlmClient client = mock(LlmClient.class);
+            org.mockito.Mockito.when(client.askForMove(org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(direction));
+            ai = new LlmAiFacade(client);
+            return this;
+        }
+
+        public GivenLlmAi a_board_with_grid(int[][] grid) {
+            boardState = new BoardState(grid);
+            return this;
+        }
     }
 }

@@ -1,0 +1,32 @@
+package ch.korotkevics.play2048.domain.service.stages;
+
+import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.service.GameId;
+import ch.korotkevics.play2048.domain.service.GameService;
+import com.tngtech.jgiven.Stage;
+import com.tngtech.jgiven.annotation.ExpectedScenarioState;
+import com.tngtech.jgiven.annotation.ProvidedScenarioState;
+
+public class WhenGameService extends Stage<WhenGameService> {
+
+    @ExpectedScenarioState
+    private GameService gameService;
+
+    @ProvidedScenarioState
+    private GameId gameId;
+
+    public WhenGameService a_new_game_is_started() {
+        gameId = gameService.startNewGame();
+        return this;
+    }
+
+    public WhenGameService a_move_is_made_in_direction(Direction direction) {
+        gameService.makeMove(gameId, direction);
+        return this;
+    }
+
+    public WhenGameService an_ai_suggestion_is_requested() {
+        gameService.requestAiSuggestion(gameId);
+        return this;
+    }
+}
