@@ -17,36 +17,40 @@ public final class GameService {
 
     private final Map<GameId, Game2048Engine> activeGames = new ConcurrentHashMap<>();
     private final MoveSuggester aiFacade;
+    private final DomainEventStream eventStream;
 
-    public GameService(MoveSuggester aiFacade) {
+    public GameService(MoveSuggester aiFacade, DomainEventStream eventStream) {
         this.aiFacade = aiFacade;
+        this.eventStream = eventStream;
     }
 
     public GameId startNewGame() {
         GameId gameId = GameId.generate();
         activeGames.put(gameId, Game2048Engine.newGame());
+        eventStream.publish(new DomainEventStream.GameStarted(gameId));
         return gameId;
     }
 
-    public Optional<MoveResult> makeMove(GameId gameId, Direction direction) {
+    public void makeMove(GameId gameId, Direction direction) {
         Game2048Engine engine = activeGames.get(gameId);
         if (engine == null) {
-            return Optional.empty();
+            return;
         }
 
         MoveResult result = engine.move(direction);
         if (result.moved()) {
             activeGames.put(gameId, result.nextEngine());
         }
-        return Optional.of(result);
+        eventStream.publish(new DomainEventStream.MoveMade(gameId, result));
     }
 
-    public Optional<Direction> getAiSuggestion(GameId gameId) {
+    public void requestAiSuggestion(GameId gameId) {
         Game2048Engine engine = activeGames.get(gameId);
         if (engine == null) {
-            return Optional.empty();
+            return;
         }
-        return aiFacade.suggestNextMove(engine.boardState());
+        aiFacade.suggestNextMove(engine.boardState())
+                .ifPresent(direction -> eventStream.publish(new DomainEventStream.AiSuggestionProduced(gameId, direction)));
     }
 
     public void abandonGame(GameId gameId) {
