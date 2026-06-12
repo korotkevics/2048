@@ -88,6 +88,31 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.16.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-testng-plugin</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>ch.korotkevics.play2048.domain.engine.*</param>
+                        <param>ch.korotkevics.play2048.domain.ai.*</param>
+                        <param>ch.korotkevics.play2048.domain.service.*</param>
+                        <param>ch.korotkevics.play2048.adapter.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>ch.korotkevics.play2048.*Test</param>
+                    </targetTests>
+                    <mutationThreshold>80</mutationThreshold>
+                    <coverageThreshold>80</coverageThreshold>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
