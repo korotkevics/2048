@@ -21,7 +21,7 @@ public class GameWebSocketAdapterTest {
     @Test
     public void handlesGameStartedEvent() {
         GameId id = GameId.generate();
-        DomainEventStream.GameStarted event = new DomainEventStream.GameStarted(id);
+        DomainEventStream.GameStarted event = new DomainEventStream.GameStarted(id, null);
 
         adapter.handleGameStarted(event);
 

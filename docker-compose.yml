@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - play2048-app
+
   play2048-app:
     build: .
     ports:

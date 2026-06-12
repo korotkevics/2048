@@ -26,8 +26,9 @@ public final class GameService {
 
     public GameId startNewGame() {
         GameId gameId = GameId.generate();
-        activeGames.put(gameId, Game2048Engine.newGame());
-        eventStream.publish(new DomainEventStream.GameStarted(gameId));
+        Game2048Engine engine = Game2048Engine.newGame();
+        activeGames.put(gameId, engine);
+        eventStream.publish(new DomainEventStream.GameStarted(gameId, engine.boardState()));
         return gameId;
     }
 

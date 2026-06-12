@@ -16,7 +16,7 @@ public final class GameWebSocketAdapter {
 
     @EventListener
     public void handleGameStarted(DomainEventStream.GameStarted event) {
-        publish(event.gameId().value().toString(), new GameEvent("STARTED", event.gameId().value().toString(), null));
+        publish(event.gameId().value().toString(), new GameEvent("STARTED", event.gameId().value().toString(), event.initialBoard()));
     }
 
     @EventListener

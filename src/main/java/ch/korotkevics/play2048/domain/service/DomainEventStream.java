@@ -1,5 +1,6 @@
 package ch.korotkevics.play2048.domain.service;
 
+import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import ch.korotkevics.play2048.domain.engine.MoveResult;
 
@@ -10,7 +11,7 @@ public interface DomainEventStream {
         GameId gameId();
     }
 
-    record GameStarted(GameId gameId) implements GameEvent {}
+    record GameStarted(GameId gameId, BoardState initialBoard) implements GameEvent {}
     record MoveMade(GameId gameId, MoveResult result) implements GameEvent {}
     record AiSuggestionProduced(GameId gameId, Direction suggestion) implements GameEvent {}
 }
