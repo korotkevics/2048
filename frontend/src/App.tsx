@@ -46,8 +46,29 @@ function App() {
   const game = useSelector((state: RootState) => state.game);
   const [showSettings, setShowSettings] = useState(false);
 
+  const isStarting = useRef(false);
+  const pendingMoveRef = useRef<Direction | null>(null);
+  const wsConnected = useRef(false);
+
+  const handleStartGame = async (initialDirection?: Direction) => {
+    if (isStarting.current) return;
+    isStarting.current = true;
+    try {
+      if (initialDirection) {
+        pendingMoveRef.current = initialDirection;
+      }
+      const id = await startNewGame();
+      dispatch(setGameId(id));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isStarting.current = false;
+    }
+  };
+
   useEffect(() => {
     if (game.gameId) {
+      wsConnected.current = false;
       const client = new Client({
         brokerURL: `ws://${window.location.host}/ws-game`,
         onConnect: () => {
@@ -55,7 +76,6 @@ function App() {
           client.subscribe(`/topic/game/${game.gameId}`, (message) => {
             const event = JSON.parse(message.body);
             if (event.type === 'STARTED') {
-              // initial board might be in event.payload
               if (event.payload) {
                 dispatch(updateGameState({
                   direction: "UP" as Direction,
@@ -73,33 +93,24 @@ function App() {
               dispatch(setAiSuggestion(event.payload));
             }
           });
+          
+          wsConnected.current = true;
+          
+          // Execute the queued initial move now that we're listening
+          if (pendingMoveRef.current && game.gameId) {
+             makeMove(game.gameId, pendingMoveRef.current);
+             pendingMoveRef.current = null;
+          }
         },
       });
       client.activate();
 
       return () => {
+        wsConnected.current = false;
         client.deactivate();
       };
     }
   }, [game.gameId, dispatch]);
-
-  const isStarting = useRef(false);
-
-  const handleStartGame = async (initialDirection?: Direction) => {
-    if (isStarting.current) return;
-    isStarting.current = true;
-    try {
-      const id = await startNewGame();
-      dispatch(setGameId(id));
-      if (initialDirection) {
-        await makeMove(id, initialDirection);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      isStarting.current = false;
-    }
-  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -117,6 +128,8 @@ function App() {
         handleStartGame(direction);
         return;
       }
+
+      if (!wsConnected.current) return;
 
       makeMove(game.gameId, direction);
     };
