@@ -42,4 +42,10 @@ public record BoardState(int[][] grid) {
     public String toString() {
         return "BoardState{grid=" + Arrays.deepToString(grid) + "}";
     }
+
+    public BoardState withTile(int row, int col, int value) {
+        int[][] newGrid = copyOf(this.grid);
+        newGrid[row][col] = value;
+        return new BoardState(newGrid);
+    }
 }
