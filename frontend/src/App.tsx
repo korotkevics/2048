@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
@@ -7,6 +7,39 @@ import type { Direction } from './store/gameSlice';
 import { startNewGame, makeMove, requestAiSuggestion } from './services/api';
 import { SettingsModal } from './components/SettingsModal';
 import './index.css';
+
+const CrownIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12 text-yellow-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">
+    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+  </svg>
+);
+
+const TileCell = ({ value }: { value: number }) => {
+  const [merged, setMerged] = useState(false);
+  const prevValue = useRef(value);
+
+  useEffect(() => {
+    // If the value increased and the previous value was not 0, assume it was a merge or a larger tile slid in
+    // Either way, it's a "collapse/merge" or progression effect that feels good to the user
+    if (value > prevValue.current && prevValue.current !== 0) {
+      setMerged(true);
+      const timer = setTimeout(() => setMerged(false), 600);
+      return () => clearTimeout(timer);
+    }
+    prevValue.current = value;
+  }, [value]);
+
+  return (
+    <div className={`w-20 h-20 relative flex items-center justify-center rounded-lg text-3xl font-bold transition-all duration-200 ${getCellClass(value)}`}>
+      {value !== 0 ? value : ''}
+      {merged && (
+        <div className="absolute inset-0 flex items-center justify-center animate-flash-crown pointer-events-none z-20">
+           <CrownIcon />
+        </div>
+      )}
+    </div>
+  );
+};
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -129,14 +162,12 @@ function App() {
           {game.boardState ? (
             game.boardState.grid.map((row, rIdx) => 
               row.map((cell, cIdx) => (
-                <div key={`${rIdx}-${cIdx}`} className={`w-20 h-20 flex items-center justify-center rounded-lg text-3xl font-bold transition-all duration-200 ${getCellClass(cell)}`}>
-                  {cell !== 0 ? cell : ''}
-                </div>
+                <TileCell key={`${rIdx}-${cIdx}`} value={cell} />
               ))
             )
           ) : (
              Array(16).fill(0).map((_, i) => (
-               <div key={i} className="w-20 h-20 rounded-lg bg-[#003366]"></div>
+               <TileCell key={i} value={0} />
              ))
           )}
         </div>
