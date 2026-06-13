@@ -6,8 +6,11 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
+const ALLOWED_TILES = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048];
+
 export function SettingsModal({ onClose }: SettingsModalProps) {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [selectedAddValue, setSelectedAddValue] = useState<number>(2);
 
   useEffect(() => {
     const fetchAndSyncSettings = async () => {
@@ -95,15 +98,11 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
 
   const handleAddProb = () => {
     if (!settings) return;
-    const newProbs = { ...settings.tileProbabilities };
-    let val = 2;
-    while(newProbs[String(val)] !== undefined && val <= 2048) {
-       val *= 2;
-    }
-    if (val <= 2048) {
-       newProbs[String(val)] = 0.0;
-       handleUpdateProbabilities(newProbs);
-    }
+    const valStr = String(selectedAddValue);
+    if (settings.tileProbabilities[valStr] !== undefined) return;
+
+    const newProbs = { ...settings.tileProbabilities, [valStr]: 0.0 };
+    handleUpdateProbabilities(newProbs);
   };
 
   if (!settings) return null;
@@ -146,9 +145,20 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
         </div>
 
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-3">
-            <label className="block text-sm font-bold text-slate-700">Tile Probabilities</label>
-            <button onClick={handleAddProb} className="text-xs bg-[#00509a] text-white px-3 py-1.5 rounded-md hover:bg-[#003d7a] transition-colors font-bold shadow-sm">Add Tile</button>
+          <div className="flex gap-2 items-center mb-3">
+            <label className="block text-sm font-bold text-slate-700 flex-1">Tile Probabilities</label>
+            <select 
+              className="text-xs p-1 border border-slate-300 rounded bg-white outline-none focus:ring-1 focus:ring-[#00509a]"
+              value={selectedAddValue}
+              onChange={(e) => setSelectedAddValue(Number(e.target.value))}
+            >
+              {ALLOWED_TILES.map(v => (
+                <option key={v} value={v} disabled={settings.tileProbabilities[String(v)] !== undefined}>
+                  {v}
+                </option>
+              ))}
+            </select>
+            <button onClick={handleAddProb} className="text-xs bg-[#00509a] text-white px-3 py-1.5 rounded-md hover:bg-[#003d7a] transition-colors font-bold shadow-sm">Add</button>
           </div>
           <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50 shadow-inner">
              {Object.entries(settings.tileProbabilities || {}).map(([val, prob]) => (
