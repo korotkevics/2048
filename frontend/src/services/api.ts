@@ -21,6 +21,7 @@ export interface Settings {
     version: string;
     aiType: string;
     initialTileCount: number;
+    tileProbabilities: Record<string, number>;
 }
 
 export const getSettings = async (): Promise<Settings> => {
