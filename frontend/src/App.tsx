@@ -114,6 +114,16 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Handle non-direction shortcuts
+      if (e.key.toLowerCase() === 'n' && game.gameId) {
+        dispatch(resetGame());
+        return;
+      }
+      if (e.key.toLowerCase() === 'a' && game.gameId && game.status === 'playing') {
+        handleAi();
+        return;
+      }
+
       let direction: Direction | null = null;
       if (e.key === 'ArrowUp') direction = 'UP';
       else if (e.key === 'ArrowDown') direction = 'DOWN';
@@ -169,8 +179,9 @@ function App() {
           <button 
             onClick={() => dispatch(resetGame())}
             className="bg-[#00509a] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#003d7a] transition-colors focus:ring-2 focus:ring-[#00509a] focus:ring-offset-2 focus:ring-offset-slate-50"
+            title="New Game (N)"
           >
-            New Game
+            New Game <span className="opacity-60 font-normal text-xs ml-1">(N)</span>
           </button>
         )}
       </div>
@@ -207,8 +218,13 @@ function App() {
       <div className="mt-8 text-center max-w-md w-full">
         <div className="flex justify-between items-center mb-6">
            <p className="text-[#002244] font-medium opacity-80">Use arrow keys to join the numbers.</p>
-           <button onClick={handleAi} disabled={!game.gameId || game.status !== 'playing'} className="bg-[#00509a] text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-[#003d7a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-             Ask AI
+           <button 
+             onClick={handleAi} 
+             disabled={!game.gameId || game.status !== 'playing'} 
+             className="bg-[#00509a] text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-[#003d7a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+             title="Ask AI (A)"
+           >
+             Ask AI <span className="opacity-70 font-normal text-xs ml-1">(A)</span>
            </button>
         </div>
         {game.aiSuggestion && (
