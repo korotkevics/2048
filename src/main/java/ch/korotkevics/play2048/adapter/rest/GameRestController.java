@@ -54,6 +54,18 @@ public final class GameRestController {
         gameService.requestAiSuggestion(clientId);
     }
 
+    @PostMapping("/auto-play")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void startAutoPlay(@RequestHeader(value = CLIENT_ID_HEADER) String clientId) {
+        gameService.startAutoPlay(clientId);
+    }
+
+    @DeleteMapping("/auto-play")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void stopAutoPlay(@RequestHeader(value = CLIENT_ID_HEADER) String clientId) {
+        gameService.stopAutoPlay(clientId);
+    }
+
     @PostMapping("/undo")
     public MoveResult undo(@RequestHeader(value = CLIENT_ID_HEADER) String clientId) {
         return gameService.undo(clientId)

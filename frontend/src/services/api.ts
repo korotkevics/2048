@@ -48,6 +48,14 @@ export const requestAiSuggestion = async (): Promise<void> => {
     await api.post(`${API_BASE}/ai`);
 };
 
+export const startAutoPlay = async (): Promise<void> => {
+    await api.post(`${API_BASE}/auto-play`);
+};
+
+export const stopAutoPlay = async (): Promise<void> => {
+    await api.delete(`${API_BASE}/auto-play`);
+};
+
 export const undoMove = async (): Promise<any> => {
     try {
         const response = await api.post(`${API_BASE}/undo`);

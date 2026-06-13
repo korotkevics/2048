@@ -7,7 +7,12 @@ import ch.korotkevics.play2048.domain.engine.Game2048Engine;
 import ch.korotkevics.play2048.domain.engine.GameSettings;
 import ch.korotkevics.play2048.domain.engine.MoveResult;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * The "Game Master" of the domain.
@@ -19,6 +24,8 @@ public final class GameService {
     private final SettingsRepository settingsRepository;
     private final MoveSuggester aiFacade;
     private final DomainEventStream eventStream;
+    private final Map<String, Future<?>> activeAutoPlays = new ConcurrentHashMap<>();
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     public GameService(GameRepository gameRepository, SettingsRepository settingsRepository, MoveSuggester aiFacade, DomainEventStream eventStream) {
         this.gameRepository = gameRepository;
@@ -28,6 +35,7 @@ public final class GameService {
     }
 
     public MoveResult startNewGame(String clientId) {
+        stopAutoPlay(clientId);
         gameRepository.clearHistory(clientId);
         SettingsRepository.SettingsBundle settingsBundle = getSettings(clientId);
         
@@ -107,6 +115,7 @@ public final class GameService {
     }
 
     public void abandonGame(String clientId) {
+        stopAutoPlay(clientId);
         gameRepository.deleteByClientId(clientId);
     }
     
@@ -126,5 +135,43 @@ public final class GameService {
 
     public void cleanupStaleGames() {
         gameRepository.deleteStaleGames(java.time.Instant.now().minus(24, java.time.temporal.ChronoUnit.HOURS));
+    }
+
+    public void startAutoPlay(String clientId) {
+        stopAutoPlay(clientId); 
+
+        Future<?> future = executor.submit(() -> {
+            try {
+                while (true) {
+                    Game2048Engine engine = gameRepository.findByClientId(clientId).orElse(null);
+                    if (engine == null || engine.isGameOver() || engine.isWon()) {
+                        break;
+                    }
+
+                    UserSettings userSettings = getSettings(clientId).userSettings();
+                    Optional<Direction> suggestion = aiFacade.suggestNextMove(engine.boardState(), userSettings);
+
+                    if (suggestion.isPresent()) {
+                        makeMove(clientId, suggestion.get());
+                        Thread.sleep(300); 
+                    } else {
+                        break; 
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                activeAutoPlays.remove(clientId);
+            }
+        });
+
+        activeAutoPlays.put(clientId, future);
+    }
+
+    public void stopAutoPlay(String clientId) {
+        Future<?> future = activeAutoPlays.remove(clientId);
+        if (future != null) {
+            future.cancel(true);
+        }
     }
 }

@@ -4,7 +4,7 @@ import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
 import { setGameId, updateGameState, setAiSuggestion, resetGame } from './store/gameSlice';
 import type { Direction } from './store/gameSlice';
-import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId } from './services/api';
+import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId, startAutoPlay, stopAutoPlay, undoMove } from './services/api';
 import { SettingsModal } from './components/SettingsModal';
 import { GameHeader } from './components/GameHeader';
 import { GameGrid } from './components/GameGrid';
@@ -18,6 +18,7 @@ function App() {
   const dispatch = useDispatch<AppDispatch>();
   const game = useSelector((state: RootState) => state.game);
   const [showSettings, setShowSettings] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false);
 
   const isStarting = useRef(false);
   const wsConnected = useRef(false);
@@ -27,15 +28,8 @@ function App() {
     if (isStarting.current) return;
     isStarting.current = true;
     try {
-      console.log('[App] Starting and moving:', direction);
-      // 1. Create the game
       await startNewGame();
       dispatch(setGameId(clientId));
-      
-      // 2. We could dispatch startResult here to show the tiles for a split second,
-      // but usually we want to just show the moved state.
-      
-      // 3. Immediately execute the move
       const moveResult = await makeMove(direction);
       if (moveResult) {
         dispatch(updateGameState(moveResult));
@@ -48,20 +42,35 @@ function App() {
   };
 
   const handleReset = async () => {
-    console.log('[App] Resetting to idle');
+    handleStopAutoPlay();
     dispatch(resetGame());
+  };
+
+  const handleStartAutoPlay = async () => {
+    setIsAutoPlaying(true);
+    await startAutoPlay();
+  };
+
+  const handleStopAutoPlay = async () => {
+    setIsAutoPlaying(false);
+    await stopAutoPlay();
+  };
+
+  const handleUndo = async () => {
+    if (game.gameId && !isAutoPlaying) {
+      const result = await undoMove();
+      if (result) {
+        dispatch(updateGameState(result));
+      }
+    }
   };
 
   useEffect(() => {
     const initSession = async () => {
-      console.log('[App] Checking for existing session...');
       const activeGame = await getCurrentGame();
       if (activeGame) {
-        console.log('[App] Found active game, resuming.');
         dispatch(setGameId(clientId));
         dispatch(updateGameState(activeGame));
-      } else {
-        console.log('[App] No active game. Showing start screen.');
       }
     };
     initSession();
@@ -72,11 +81,13 @@ function App() {
       const client = new Client({
         brokerURL: `ws://${window.location.host}/ws-game`,
         onConnect: () => {
-          console.log('[WS] Connected to channel:', clientId);
           client.subscribe(`/topic/game/${clientId}`, (message) => {
             const event = JSON.parse(message.body);
             if (event.type === 'MOVE') {
               dispatch(updateGameState(event.payload));
+              if (event.payload.gameOver || event.payload.won) {
+                setIsAutoPlaying(false);
+              }
             } else if (event.type === 'AI_SUGGESTION') {
               dispatch(setAiSuggestion(event.payload));
             }
@@ -105,26 +116,35 @@ function App() {
       else if (e.key === 'ArrowLeft') direction = 'LEFT';
       else if (e.key === 'ArrowRight') direction = 'RIGHT';
 
-      if (!direction) return;
-      e.preventDefault();
+      if (direction) {
+        e.preventDefault();
+        if (isAutoPlaying) return; 
 
-      // If game not started or in idle state, start AND move
-      if (!game.gameId || game.status === 'idle') {
-        handleStartAndMove(direction);
+        if (!game.gameId || game.status === 'idle') {
+          handleStartAndMove(direction);
+          return;
+        }
+
+        if (game.status === 'playing' && game.boardState) {
+          makeMove(direction).then(res => {
+            if (res) dispatch(updateGameState(res));
+          });
+        }
         return;
       }
 
-      if (game.status !== 'playing' || !game.boardState) return;
-
-      // Regular move
-      makeMove(direction).then(res => {
-        if (res) dispatch(updateGameState(res));
-      });
+      if (e.key.toLowerCase() === 'u') {
+        e.preventDefault();
+        handleUndo();
+      } else if (e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        handleAi();
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [game.gameId, game.status, game.boardState]);
+  }, [game.gameId, game.status, game.boardState, isAutoPlaying]);
 
   const handleAi = () => {
     if (game.gameId) {
@@ -144,15 +164,28 @@ function App() {
 
       <BoardWrapper>
         {(game.gameOver || game.won) && <GameOverOverlay won={game.won} />}
-        {!game.boardState && <StartOverlay />}
+        {(!game.boardState) && <StartOverlay />}
         
         <GameGrid boardState={game.boardState} />
       </BoardWrapper>
 
-      <div className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest flex gap-4">
-          <span>(Arrows) Move</span>
-          <span>(A) AI</span>
-          <span>(N) New Game</span>
+      <div className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest flex flex-col items-center gap-4">
+          <div className="flex gap-4">
+            <button onClick={handleUndo} className="hover:text-slate-600 transition-colors">(U) Undo</button>
+            <button onClick={handleAi} className="hover:text-slate-600 transition-colors">(A) AI Suggest</button>
+            <button onClick={handleReset} className="hover:text-slate-600 transition-colors">(N) New Game</button>
+          </div>
+          
+          <button 
+            onClick={isAutoPlaying ? handleStopAutoPlay : handleStartAutoPlay}
+            className={`px-6 py-2 rounded-full font-black text-sm transition-all shadow-lg ${
+              isAutoPlaying 
+                ? "bg-red-500 text-white hover:bg-red-600 animate-pulse" 
+                : "bg-[#002244] text-white hover:bg-[#003366]"
+            }`}
+          >
+            {isAutoPlaying ? "STOP AUTO-PLAY" : "START AUTO-PLAY"}
+          </button>
       </div>
 
       <GameControls 
