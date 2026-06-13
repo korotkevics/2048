@@ -42,15 +42,22 @@ public final class SettingsRestController {
         if (request.tileProbabilities() != null && !request.tileProbabilities().isEmpty()) {
             GameSettings.TileSpawnConfiguration spawnConfig = gameSettings.getSpawnConfiguration();
             
+            // Safely parse keys to integers to avoid Jackson String key type erasure bugs
+            java.util.Map<Integer, Double> safeProbs = new java.util.HashMap<>();
+            for (Map.Entry<?, Double> entry : request.tileProbabilities().entrySet()) {
+                int key = Integer.parseInt(String.valueOf(entry.getKey()));
+                safeProbs.put(key, entry.getValue());
+            }
+
             // Add or update probabilities
-            for (Map.Entry<Integer, Double> entry : request.tileProbabilities().entrySet()) {
+            for (Map.Entry<Integer, Double> entry : safeProbs.entrySet()) {
                 spawnConfig.update(entry.getKey(), entry.getValue());
             }
             
             // Remove old ones not in the new request
             Set<Integer> currentKeys = spawnConfig.getProbabilities().keySet();
             for (Integer key : currentKeys) {
-                if (!request.tileProbabilities().containsKey(key)) {
+                if (!safeProbs.containsKey(key)) {
                     spawnConfig.remove(key);
                 }
             }
