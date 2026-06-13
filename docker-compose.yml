@@ -4,14 +4,14 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"
+      - "85:80"
     depends_on:
       - play2048-app
 
   play2048-app:
     build: .
     ports:
-      - "8081:8080"
+      - "8085:8080"
     environment:
       - OLLAMA_API_URL=http://ollama:11434
     depends_on:
