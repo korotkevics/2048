@@ -42,6 +42,15 @@ export const requestAiSuggestion = async (): Promise<void> => {
     await api.post(`${API_BASE}/ai`);
 };
 
+export const undoMove = async (): Promise<any> => {
+    try {
+        const response = await api.post(`${API_BASE}/undo`);
+        return response.data;
+    } catch (e) {
+        return null;
+    }
+};
+
 export interface Settings {
     version: string;
     aiType: string;

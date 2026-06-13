@@ -10,4 +10,8 @@ public interface GameRepository {
     Optional<Game2048Engine> findByClientId(String clientId);
     void deleteByClientId(String clientId);
     void deleteStaleGames(Instant threshold);
+
+    void pushToHistory(String clientId, Game2048Engine engine);
+    Optional<Game2048Engine> popFromHistory(String clientId);
+    void clearHistory(String clientId);
 }

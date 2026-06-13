@@ -32,7 +32,8 @@ public final class GameRestController {
         return gameService.getActiveGame(clientId)
                 .map(engine -> new MoveResult(
                         null, false, 0, engine.score(),
-                        engine.isGameOver(), engine.isWon(), engine.boardState(), engine
+                        engine.isGameOver(), engine.isWon(), engine.boardState(), 
+                        java.util.Collections.emptyList(), engine
                 ))
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "No active game"));
     }
@@ -47,6 +48,12 @@ public final class GameRestController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void requestAiSuggestion(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId) {
         gameService.requestAiSuggestion(clientId);
+    }
+
+    @PostMapping("/undo")
+    public MoveResult undo(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId) {
+        return gameService.undo(clientId)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "No moves to undo"));
     }
 
     public record GameResponse(String gameId) {}

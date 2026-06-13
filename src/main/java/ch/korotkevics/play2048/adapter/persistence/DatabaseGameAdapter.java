@@ -17,11 +17,16 @@ public class DatabaseGameAdapter implements GameRepository {
 
     private final SpringDataGameRepository repository;
     private final SpringDataSettingsRepository settingsRepository;
+    private final SpringDataGameHistoryRepository historyRepository;
     private final ObjectMapper objectMapper;
 
-    public DatabaseGameAdapter(SpringDataGameRepository repository, SpringDataSettingsRepository settingsRepository, ObjectMapper objectMapper) {
+    public DatabaseGameAdapter(SpringDataGameRepository repository, 
+                               SpringDataSettingsRepository settingsRepository, 
+                               SpringDataGameHistoryRepository historyRepository,
+                               ObjectMapper objectMapper) {
         this.repository = repository;
         this.settingsRepository = settingsRepository;
+        this.historyRepository = historyRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -64,7 +69,7 @@ public class DatabaseGameAdapter implements GameRepository {
                 GameSettings.TileSpawnConfiguration config = gs.getSpawnConfiguration();
                 
                 // Clear default
-                config.getProbabilities().keySet().forEach(config::remove);
+                new java.util.ArrayList<>(config.getProbabilities().keySet()).forEach(config::remove);
                 
                 probs.forEach((k, v) -> config.update(Integer.parseInt(k), v));
                 return gs;
@@ -78,11 +83,47 @@ public class DatabaseGameAdapter implements GameRepository {
     @Transactional
     public void deleteByClientId(String clientId) {
         repository.deleteById(clientId);
+        historyRepository.deleteByClientId(clientId);
     }
 
     @Override
     @Transactional
     public void deleteStaleGames(Instant threshold) {
         repository.deleteByLastActivityAtBefore(threshold);
+        historyRepository.deleteByCreatedAtBefore(threshold);
+    }
+
+    @Override
+    @Transactional
+    public void pushToHistory(String clientId, Game2048Engine engine) {
+        try {
+            String boardJson = objectMapper.writeValueAsString(engine.board());
+            GameHistoryEntity entity = new GameHistoryEntity(clientId, boardJson, engine.score());
+            historyRepository.save(entity);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize history board", e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Optional<Game2048Engine> popFromHistory(String clientId) {
+        return historyRepository.findFirstByClientIdOrderByCreatedAtDesc(clientId).map(entity -> {
+            try {
+                int[][] grid = objectMapper.readValue(entity.getBoardJson(), int[][].class);
+                GameSettings gameSettings = fetchSettings(clientId);
+                Game2048Engine engine = Game2048Engine.from(grid, entity.getScore(), new Random(), gameSettings);
+                historyRepository.delete(entity);
+                return engine;
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to deserialize history board", e);
+            }
+        });
+    }
+
+    @Override
+    @Transactional
+    public void clearHistory(String clientId) {
+        historyRepository.deleteByClientId(clientId);
     }
 }

@@ -7,14 +7,25 @@ export interface BoardState {
     grid: number[][];
 }
 
+export interface TileMove {
+    fromRow: number;
+    fromCol: number;
+    toRow: number;
+    toCol: number;
+    value: number;
+    merged: boolean;
+    isNew: boolean;
+}
+
 export interface MoveResult {
-    direction: Direction;
+    direction: Direction | null;
     moved: boolean;
     scoreGained: number;
     score: number;
     gameOver: boolean;
     won: boolean;
     boardState: BoardState;
+    deltas: TileMove[];
 }
 
 interface GameState {
@@ -25,6 +36,7 @@ interface GameState {
     won: boolean;
     aiSuggestion: Direction | null;
     status: 'idle' | 'playing' | 'ended';
+    lastMove: MoveResult | null; // For animation
 }
 
 const initialState: GameState = {
@@ -34,7 +46,8 @@ const initialState: GameState = {
     gameOver: false,
     won: false,
     aiSuggestion: null,
-    status: 'idle'
+    status: 'idle',
+    lastMove: null
 };
 
 const gameSlice = createSlice({
@@ -49,8 +62,10 @@ const gameSlice = createSlice({
             state.gameOver = false;
             state.won = false;
             state.aiSuggestion = null;
+            state.lastMove = null;
         },
         updateGameState(state, action: PayloadAction<MoveResult>) {
+            state.lastMove = action.payload;
             if (action.payload.boardState) {
                 state.boardState = action.payload.boardState;
             }

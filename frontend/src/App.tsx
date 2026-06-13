@@ -4,7 +4,7 @@ import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
 import { setGameId, updateGameState, setAiSuggestion, resetGame } from './store/gameSlice';
 import type { Direction } from './store/gameSlice';
-import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId } from './services/api';
+import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId, undoMove } from './services/api';
 import { SettingsModal } from './components/SettingsModal';
 import { GameHeader } from './components/GameHeader';
 import { GameGrid } from './components/GameGrid';
@@ -69,7 +69,8 @@ function App() {
                   score: 0,
                   gameOver: false,
                   won: false,
-                  boardState: event.payload
+                  boardState: event.payload,
+                  deltas: []
                 }));
               }
             } else if (event.type === 'MOVE') {
@@ -106,6 +107,10 @@ function App() {
         handleAi();
         return;
       }
+      if (e.key.toLowerCase() === 'u' && game.gameId && game.status === 'playing') {
+        handleUndo();
+        return;
+      }
 
       let direction: Direction | null = null;
       if (e.key === 'ArrowUp') direction = 'UP';
@@ -137,6 +142,15 @@ function App() {
     }
   };
 
+  const handleUndo = async () => {
+    if (game.gameId) {
+      const result = await undoMove();
+      if (result) {
+        dispatch(updateGameState(result));
+      }
+    }
+  };
+
   return (
     <GameContainer>
       <GameHeader 
@@ -152,6 +166,13 @@ function App() {
         
         <GameGrid boardState={game.boardState} />
       </BoardWrapper>
+
+      <div className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest flex gap-4">
+          <span>(Arrows) Move</span>
+          <span>(A) AI</span>
+          <span>(U) Undo</span>
+          <span>(N) New</span>
+      </div>
 
       <GameControls 
         gameId={game.gameId}

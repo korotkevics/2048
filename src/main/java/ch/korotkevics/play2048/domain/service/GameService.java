@@ -30,6 +30,7 @@ public final class GameService {
     }
 
     public GameId startNewGame(String clientId) {
+        gameRepository.clearHistory(clientId);
         GameSettings settings = settingsRepository.findByClientId(clientId)
                 .map(SettingsRepository.SettingsBundle::gameSettings)
                 .orElse(new GameSettings());
@@ -38,20 +39,41 @@ public final class GameService {
         gameRepository.save(clientId, engine);
         
         eventStream.publish(new DomainEventStream.GameStarted(clientId, engine.boardState()));
-        return GameId.generate(); // We still return a GameId for the response if needed, but clientId is the key.
+        return GameId.generate(); 
     }
 
     public MoveResult makeMove(String clientId, Direction direction) {
         Game2048Engine engine = gameRepository.findByClientId(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("No active game for client: " + clientId));
 
+        // Push current state to history before making move
+        gameRepository.pushToHistory(clientId, engine);
+
         MoveResult result = engine.move(direction);
         if (result.moved()) {
             gameRepository.save(clientId, result.nextEngine());
+        } else {
+            // If move didn't happen, remove from history to keep it clean
+            gameRepository.popFromHistory(clientId);
         }
         
         eventStream.publish(new DomainEventStream.MoveMade(clientId, result));
         return result;
+    }
+
+    public Optional<MoveResult> undo(String clientId) {
+        return gameRepository.popFromHistory(clientId).map(previousEngine -> {
+            gameRepository.save(clientId, previousEngine);
+            
+            MoveResult result = new MoveResult(
+                    null, true, 0, previousEngine.score(),
+                    previousEngine.isGameOver(), previousEngine.isWon(),
+                    previousEngine.boardState(), java.util.Collections.emptyList(), previousEngine
+            );
+            
+            eventStream.publish(new DomainEventStream.MoveMade(clientId, result));
+            return result;
+        });
     }
 
     public void requestAiSuggestion(String clientId) {

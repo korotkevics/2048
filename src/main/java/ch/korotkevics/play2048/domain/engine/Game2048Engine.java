@@ -1,6 +1,8 @@
 package ch.korotkevics.play2048.domain.engine;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -54,10 +56,21 @@ public final class Game2048Engine {
     }
 
     public MoveResult move(Direction direction) {
-        // If board is completely empty, this is the very first move.
-        // It shouldn't shift anything, just spawn the initial tiles.
+        List<GlobalTileMove> deltas = new ArrayList<>();
+        
         if (board.emptyCells().size() == board.size() * board.size()) {
             Board seededBoard = tileSpawner.spawnInitialTiles(board, settings, random);
+            
+            // Track initial spawns as deltas
+            for (int r = 0; r < seededBoard.size(); r++) {
+                for (int c = 0; c < seededBoard.size(); c++) {
+                    int val = seededBoard.getValue(r, c);
+                    if (val != 0) {
+                        deltas.add(new GlobalTileMove(r, c, r, c, val, false, true));
+                    }
+                }
+            }
+
             Game2048Engine finalEngine = new Game2048Engine(seededBoard, score, random, settings);
             return new MoveResult(
                     direction,
@@ -67,26 +80,41 @@ public final class Game2048Engine {
                     finalEngine.isGameOver(),
                     finalEngine.isWon(),
                     finalEngine.boardState(),
+                    deltas,
                     finalEngine
             );
         }
 
-        MoveResult result = simulateMove(direction);
-        if (result.moved()) {
-            Board boardWithTile = tileSpawner.spawnRandomTile(result.nextEngine().board, settings, random);
-            Game2048Engine finalEngine = new Game2048Engine(boardWithTile, result.score(), random, settings);
+        MoveResult simResult = simulateMove(direction);
+        if (simResult.moved()) {
+            deltas.addAll(simResult.deltas());
+            
+            Board boardWithTile = tileSpawner.spawnRandomTile(simResult.nextEngine().board, settings, random);
+            
+            // Track the new random tile
+            Board oldBoard = simResult.nextEngine().board;
+            for (int r = 0; r < boardWithTile.size(); r++) {
+                for (int c = 0; c < boardWithTile.size(); c++) {
+                    if (oldBoard.getValue(r, c) == 0 && boardWithTile.getValue(r, c) != 0) {
+                        deltas.add(new GlobalTileMove(r, c, r, c, boardWithTile.getValue(r, c), false, true));
+                    }
+                }
+            }
+
+            Game2048Engine finalEngine = new Game2048Engine(boardWithTile, simResult.score(), random, settings);
             return new MoveResult(
                     direction,
                     true,
-                    result.scoreGained(),
-                    result.score(),
+                    simResult.scoreGained(),
+                    simResult.score(),
                     finalEngine.isGameOver(),
                     finalEngine.isWon(),
                     finalEngine.boardState(),
+                    deltas,
                     finalEngine
             );
         }
-        return result;
+        return simResult;
     }
 
     public MoveResult simulateMove(Direction direction) {
@@ -96,13 +124,26 @@ public final class Game2048Engine {
         boolean moved = false;
         int size = board.size();
         Board currentBoard = board;
+        List<GlobalTileMove> deltas = new ArrayList<>();
 
         for (int index = 0; index < size; index++) {
             int[] originalLine = currentBoard.getLine(index, direction);
             LineProcessor.ProcessedLine processedLine = lineProcessor.process(originalLine);
+            
             if (!Arrays.equals(originalLine, processedLine.values())) {
                 moved = true;
                 currentBoard = currentBoard.withLine(index, direction, processedLine.values());
+                
+                // Convert line moves to global moves
+                for (TileMove move : processedLine.moves()) {
+                    Board.Cell fromCell = cellFor(index, move.fromIndex(), direction, size);
+                    Board.Cell toCell = cellFor(index, move.toIndex(), direction, size);
+                    deltas.add(new GlobalTileMove(
+                            fromCell.row(), fromCell.column(),
+                            toCell.row(), toCell.column(),
+                            move.value(), move.merged(), false
+                    ));
+                }
             }
             scoreGained += processedLine.scoreGained();
         }
@@ -118,8 +159,18 @@ public final class Game2048Engine {
                 nextEngine.isGameOver(),
                 nextEngine.isWon(),
                 nextEngine.boardState(),
+                deltas,
                 nextEngine
         );
+    }
+
+    private Board.Cell cellFor(int index, int offset, Direction direction, int size) {
+        return switch (direction) {
+            case LEFT -> new Board.Cell(index, offset);
+            case RIGHT -> new Board.Cell(index, size - 1 - offset);
+            case UP -> new Board.Cell(offset, index);
+            case DOWN -> new Board.Cell(size - 1 - offset, index);
+        };
     }
 
     public int[][] board() {
