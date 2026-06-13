@@ -4,7 +4,7 @@ import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
 import { setGameId, updateGameState, setAiSuggestion, resetGame } from './store/gameSlice';
 import type { Direction } from './store/gameSlice';
-import { startNewGame, makeMove, requestAiSuggestion } from './services/api';
+import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId } from './services/api';
 import { SettingsModal } from './components/SettingsModal';
 import { GameHeader } from './components/GameHeader';
 import { GameGrid } from './components/GameGrid';
@@ -22,6 +22,18 @@ function App() {
   const isStarting = useRef(false);
   const pendingMoveRef = useRef<Direction | null>(null);
   const wsConnected = useRef(false);
+  const clientId = getClientId();
+
+  useEffect(() => {
+    const resumeSession = async () => {
+      const activeGame = await getCurrentGame();
+      if (activeGame) {
+        dispatch(setGameId(clientId));
+        dispatch(updateGameState(activeGame));
+      }
+    };
+    resumeSession();
+  }, [dispatch, clientId]);
 
   const handleStartGame = async (initialDirection?: Direction) => {
     if (isStarting.current) return;
@@ -30,8 +42,8 @@ function App() {
       if (initialDirection) {
         pendingMoveRef.current = initialDirection;
       }
-      const id = await startNewGame();
-      dispatch(setGameId(id));
+      await startNewGame();
+      dispatch(setGameId(clientId));
     } catch (e) {
       console.error(e);
     } finally {
@@ -46,7 +58,7 @@ function App() {
         brokerURL: `ws://${window.location.host}/ws-game`,
         onConnect: () => {
           console.log('Connected to WS');
-          client.subscribe(`/topic/game/${game.gameId}`, (message) => {
+          client.subscribe(`/topic/game/${clientId}`, (message) => {
             const event = JSON.parse(message.body);
             if (event.type === 'STARTED') {
               if (event.payload) {
@@ -69,8 +81,8 @@ function App() {
           
           wsConnected.current = true;
           
-          if (pendingMoveRef.current && game.gameId) {
-             makeMove(game.gameId, pendingMoveRef.current);
+          if (pendingMoveRef.current) {
+             makeMove(pendingMoveRef.current);
              pendingMoveRef.current = null;
           }
         },
@@ -82,7 +94,7 @@ function App() {
         client.deactivate();
       };
     }
-  }, [game.gameId, dispatch]);
+  }, [game.gameId, dispatch, clientId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -112,7 +124,7 @@ function App() {
 
       if (!wsConnected.current) return;
 
-      makeMove(game.gameId, direction);
+      makeMove(direction);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -121,7 +133,7 @@ function App() {
 
   const handleAi = () => {
     if (game.gameId) {
-      requestAiSuggestion(game.gameId);
+      requestAiSuggestion();
     }
   };
 

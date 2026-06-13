@@ -10,22 +10,20 @@ import java.util.Optional;
 public final class AiFacade implements MoveSuggester {
 
     private final Map<UserSettings.AiType, MoveSuggester> suggesters;
-    private final UserSettings userSettings;
 
-    public AiFacade(Map<UserSettings.AiType, MoveSuggester> suggesters, UserSettings userSettings) {
+    public AiFacade(Map<UserSettings.AiType, MoveSuggester> suggesters) {
         this.suggesters = Map.copyOf(suggesters);
-        this.userSettings = Objects.requireNonNull(userSettings, "userSettings must not be null");
     }
 
     @Override
-    public Optional<Direction> suggestNextMove(BoardState boardState) {
-        UserSettings.AiType currentType = userSettings.getAiType();
+    public Optional<Direction> suggestNextMove(BoardState boardState, UserSettings settings) {
+        UserSettings.AiType currentType = settings.getAiType();
         MoveSuggester suggester = suggesters.get(currentType);
         
         if (suggester == null) {
             return Optional.empty();
         }
         
-        return suggester.suggestNextMove(boardState);
+        return suggester.suggestNextMove(boardState, settings);
     }
 }

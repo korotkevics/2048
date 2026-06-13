@@ -13,48 +13,22 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const [selectedAddValue, setSelectedAddValue] = useState<number>(2);
 
   useEffect(() => {
-    const fetchAndSyncSettings = async () => {
+    const fetchSettings = async () => {
       try {
         const backendSettings = await getSettings();
-        const localSettingsStr = localStorage.getItem('play2048_settings');
-        
-        let mergedSettings = backendSettings;
-
-        if (localSettingsStr) {
-          const localSettings = JSON.parse(localSettingsStr) as Settings;
-          const backendMajor = backendSettings.version.split('.')[0];
-          const localMajor = localSettings?.version?.split('.')[0];
-
-          if (backendMajor !== localMajor) {
-            // Major version mismatch: discard local, use backend
-            console.log('Settings version major mismatch. Resetting local settings.');
-          } else {
-            // Compatible: merge, keeping local preferences, updating version
-            mergedSettings = { ...localSettings, version: backendSettings.version };
-            // Push local preferences to backend to ensure they are active
-            await updateSettings({ 
-                aiType: mergedSettings.aiType, 
-                initialTileCount: mergedSettings.initialTileCount,
-                tileProbabilities: mergedSettings.tileProbabilities
-            });
-          }
-        }
-        
-        localStorage.setItem('play2048_settings', JSON.stringify(mergedSettings));
-        setSettings(mergedSettings);
+        setSettings(backendSettings);
       } catch (e) {
         console.error("Failed to load settings", e);
       }
     };
 
-    fetchAndSyncSettings();
+    fetchSettings();
   }, []);
 
   const handleChangeAiType = async (type: string) => {
     if (!settings) return;
     const newSettings = { ...settings, aiType: type };
     setSettings(newSettings);
-    localStorage.setItem('play2048_settings', JSON.stringify(newSettings));
     await updateSettings({ aiType: type });
   };
 
@@ -62,7 +36,6 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
     if (!settings) return;
     const newSettings = { ...settings, initialTileCount: count };
     setSettings(newSettings);
-    localStorage.setItem('play2048_settings', JSON.stringify(newSettings));
     await updateSettings({ initialTileCount: count });
   };
 
@@ -70,7 +43,6 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
     if (!settings) return;
     const newSettings = { ...settings, tileProbabilities: newProbs };
     setSettings(newSettings);
-    localStorage.setItem('play2048_settings', JSON.stringify(newSettings));
     
     // Only send to backend if sum is exactly 1.0 to avoid 500 errors
     const sum = Object.values(newProbs).reduce((a, b) => a + b, 0);

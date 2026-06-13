@@ -1,8 +1,10 @@
 package ch.korotkevics.play2048.domain.service;
 
 import ch.korotkevics.play2048.domain.ai.MoveSuggester;
+import ch.korotkevics.play2048.domain.ai.UserSettings;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import ch.korotkevics.play2048.domain.engine.Game2048Engine;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import ch.korotkevics.play2048.domain.engine.MoveResult;
 
 import java.util.Map;
@@ -15,48 +17,74 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class GameService {
 
-    private final Map<GameId, Game2048Engine> activeGames = new ConcurrentHashMap<>();
+    private final GameRepository gameRepository;
+    private final SettingsRepository settingsRepository;
     private final MoveSuggester aiFacade;
     private final DomainEventStream eventStream;
-    private final ch.korotkevics.play2048.domain.engine.GameSettings gameSettings;
 
-    public GameService(MoveSuggester aiFacade, DomainEventStream eventStream, ch.korotkevics.play2048.domain.engine.GameSettings gameSettings) {
+    public GameService(GameRepository gameRepository, SettingsRepository settingsRepository, MoveSuggester aiFacade, DomainEventStream eventStream) {
+        this.gameRepository = gameRepository;
+        this.settingsRepository = settingsRepository;
         this.aiFacade = aiFacade;
         this.eventStream = eventStream;
-        this.gameSettings = gameSettings;
     }
 
-    public GameId startNewGame() {
-        GameId gameId = GameId.generate();
-        Game2048Engine engine = Game2048Engine.newGame(Game2048Engine.DEFAULT_SIZE, new java.util.Random(), gameSettings);
-        activeGames.put(gameId, engine);
-        eventStream.publish(new DomainEventStream.GameStarted(gameId, engine.boardState()));
-        return gameId;
+    public GameId startNewGame(String clientId) {
+        GameSettings settings = settingsRepository.findByClientId(clientId)
+                .map(SettingsRepository.SettingsBundle::gameSettings)
+                .orElse(new GameSettings());
+        
+        Game2048Engine engine = Game2048Engine.newGame(Game2048Engine.DEFAULT_SIZE, new java.util.Random(), settings);
+        gameRepository.save(clientId, engine);
+        
+        eventStream.publish(new DomainEventStream.GameStarted(clientId, engine.boardState()));
+        return GameId.generate(); // We still return a GameId for the response if needed, but clientId is the key.
     }
 
-    public void makeMove(GameId gameId, Direction direction) {
-        Game2048Engine engine = activeGames.get(gameId);
-        if (engine == null) {
-            return;
-        }
+    public MoveResult makeMove(String clientId, Direction direction) {
+        Game2048Engine engine = gameRepository.findByClientId(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("No active game for client: " + clientId));
 
         MoveResult result = engine.move(direction);
         if (result.moved()) {
-            activeGames.put(gameId, result.nextEngine());
+            gameRepository.save(clientId, result.nextEngine());
         }
-        eventStream.publish(new DomainEventStream.MoveMade(gameId, result));
+        
+        eventStream.publish(new DomainEventStream.MoveMade(clientId, result));
+        return result;
     }
 
-    public void requestAiSuggestion(GameId gameId) {
-        Game2048Engine engine = activeGames.get(gameId);
-        if (engine == null) {
-            return;
-        }
-        aiFacade.suggestNextMove(engine.boardState())
-                .ifPresent(direction -> eventStream.publish(new DomainEventStream.AiSuggestionProduced(gameId, direction)));
+    public void requestAiSuggestion(String clientId) {
+        Game2048Engine engine = gameRepository.findByClientId(clientId)
+                .orElse(null);
+        if (engine == null) return;
+
+        UserSettings userSettings = settingsRepository.findByClientId(clientId)
+                .map(SettingsRepository.SettingsBundle::userSettings)
+                .orElse(new UserSettings());
+
+        aiFacade.suggestNextMove(engine.boardState(), userSettings)
+                .ifPresent(direction -> eventStream.publish(new DomainEventStream.AiSuggestionProduced(clientId, direction)));
     }
 
-    public void abandonGame(GameId gameId) {
-        activeGames.remove(gameId);
+    public void abandonGame(String clientId) {
+        gameRepository.deleteByClientId(clientId);
+    }
+    
+    public Optional<Game2048Engine> getActiveGame(String clientId) {
+        return gameRepository.findByClientId(clientId);
+    }
+
+    public SettingsRepository.SettingsBundle getSettings(String clientId) {
+        return settingsRepository.findByClientId(clientId)
+                .orElseGet(() -> new SettingsRepository.SettingsBundle(new UserSettings(), new GameSettings()));
+    }
+
+    public void updateSettings(String clientId, UserSettings userSettings, GameSettings gameSettings) {
+        settingsRepository.save(clientId, userSettings, gameSettings);
+    }
+
+    public void cleanupStaleGames() {
+        gameRepository.deleteStaleGames(java.time.Instant.now().minus(24, java.time.temporal.ChronoUnit.HOURS));
     }
 }

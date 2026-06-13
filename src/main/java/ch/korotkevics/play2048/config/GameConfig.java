@@ -8,21 +8,34 @@ import ch.korotkevics.play2048.domain.ai.deterministic.DeterministicAiFacade;
 import ch.korotkevics.play2048.domain.ai.llm.LlmAiFacade;
 import ch.korotkevics.play2048.domain.service.DomainEventStream;
 import ch.korotkevics.play2048.domain.service.GameService;
+import ch.korotkevics.play2048.domain.service.GameRepository;
+import ch.korotkevics.play2048.domain.service.SettingsRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 
 @Configuration
+@EnableScheduling
 public class GameConfig {
 
-    @Bean
-    public UserSettings userSettings() {
-        return new UserSettings();
+    private final ApplicationContext applicationContext;
+
+    public GameConfig(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     @Bean
-    public MoveSuggester aiFacade(UserSettings userSettings) {
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public MoveSuggester aiFacade() {
         DeterministicAiFacade deterministic = new DeterministicAiFacade();
         // Default model for Ollama, can be further configured
         LlmAiFacade llm = new LlmAiFacade(new OllamaLlmAdapter("llama3"));
@@ -30,16 +43,21 @@ public class GameConfig {
         return new AiFacade(Map.of(
                 UserSettings.AiType.DETERMINISTIC, deterministic,
                 UserSettings.AiType.LLM, llm
-        ), userSettings);
+        ));
     }
 
     @Bean
-    public ch.korotkevics.play2048.domain.engine.GameSettings gameSettings() {
-        return new ch.korotkevics.play2048.domain.engine.GameSettings();
+    public GameService gameService(GameRepository gameRepository, 
+                                   SettingsRepository settingsRepository, 
+                                   MoveSuggester aiFacade, 
+                                   DomainEventStream eventStream) {
+        return new GameService(gameRepository, settingsRepository, aiFacade, eventStream);
     }
 
-    @Bean
-    public GameService gameService(MoveSuggester aiFacade, DomainEventStream eventStream, ch.korotkevics.play2048.domain.engine.GameSettings gameSettings) {
-        return new GameService(aiFacade, eventStream, gameSettings);
+    @Scheduled(fixedRate = 3600000) // Every hour
+    public void cleanupStaleGames() {
+        // Fetch from context to avoid circular dependency during Bean creation
+        GameService gameService = applicationContext.getBean(GameService.class);
+        gameService.cleanupStaleGames();
     }
 }

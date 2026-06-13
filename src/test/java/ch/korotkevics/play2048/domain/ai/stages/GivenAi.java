@@ -1,6 +1,7 @@
 package ch.korotkevics.play2048.domain.ai.stages;
 
 import ch.korotkevics.play2048.domain.ai.MoveSuggester;
+import ch.korotkevics.play2048.domain.ai.UserSettings;
 import ch.korotkevics.play2048.domain.ai.deterministic.DeterministicAiFacade;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
@@ -16,6 +17,9 @@ public class GivenAi extends Stage<GivenAi> {
 
     @ProvidedScenarioState
     private BoardState boardState;
+
+    @ProvidedScenarioState
+    private UserSettings settings = new UserSettings();
 
     public GivenAi a_deterministic_ai() {
         ai = new DeterministicAiFacade();

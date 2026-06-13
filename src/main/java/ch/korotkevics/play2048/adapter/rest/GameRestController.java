@@ -1,6 +1,7 @@
 package ch.korotkevics.play2048.adapter.rest;
 
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.engine.MoveResult;
 import ch.korotkevics.play2048.domain.service.GameId;
 import ch.korotkevics.play2048.domain.service.GameService;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @RequestMapping("/api/game")
 public final class GameRestController {
 
+    private static final String CLIENT_ID_HEADER = "X-Client-ID";
     private final GameService gameService;
 
     public GameRestController(GameService gameService) {
@@ -20,21 +22,31 @@ public final class GameRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public GameResponse startNewGame() {
-        GameId gameId = gameService.startNewGame();
+    public GameResponse startNewGame(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId) {
+        GameId gameId = gameService.startNewGame(clientId);
         return new GameResponse(gameId.value().toString());
     }
 
-    @PostMapping("/{id}/move")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void makeMove(@PathVariable UUID id, @RequestBody MoveRequest request) {
-        gameService.makeMove(new GameId(id), request.direction());
+    @GetMapping("/current")
+    public MoveResult getCurrentGame(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId) {
+        return gameService.getActiveGame(clientId)
+                .map(engine -> new MoveResult(
+                        null, false, 0, engine.score(),
+                        engine.isGameOver(), engine.isWon(), engine.boardState(), engine
+                ))
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "No active game"));
     }
 
-    @PostMapping("/{id}/ai")
+    @PostMapping("/move")
+    public MoveResult makeMove(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId, 
+                               @RequestBody MoveRequest request) {
+        return gameService.makeMove(clientId, request.direction());
+    }
+
+    @PostMapping("/ai")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void requestAiSuggestion(@PathVariable UUID id) {
-        gameService.requestAiSuggestion(new GameId(id));
+    public void requestAiSuggestion(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId) {
+        gameService.requestAiSuggestion(clientId);
     }
 
     public record GameResponse(String gameId) {}

@@ -44,13 +44,13 @@ public class AiFacadeTest extends ScenarioTest<AiFacadeTest.GivenAiFacade, AiFac
             MoveSuggester llm = mock(MoveSuggester.class);
             settings = new UserSettings();
             
-            org.mockito.Mockito.when(det.suggestNextMove(org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.UP));
-            org.mockito.Mockito.when(llm.suggestNextMove(org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.DOWN));
+            org.mockito.Mockito.when(det.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.UP));
+            org.mockito.Mockito.when(llm.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.DOWN));
 
             ai = new AiFacade(Map.of(
                     UserSettings.AiType.DETERMINISTIC, det,
                     UserSettings.AiType.LLM, llm
-            ), settings);
+            ));
             return this;
         }
 
@@ -76,7 +76,7 @@ public class AiFacadeTest extends ScenarioTest<AiFacadeTest.GivenAiFacade, AiFac
         }
 
         public WhenAiFacade the_ai_is_asked_for_a_move() {
-            suggestion = ai.suggestNextMove(boardState);
+            suggestion = ai.suggestNextMove(boardState, settings);
             return this;
         }
     }

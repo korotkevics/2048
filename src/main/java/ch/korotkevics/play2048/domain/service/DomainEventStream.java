@@ -8,10 +8,10 @@ public interface DomainEventStream {
     void publish(GameEvent event);
 
     sealed interface GameEvent {
-        GameId gameId();
+        String clientId();
     }
 
-    record GameStarted(GameId gameId, BoardState initialBoard) implements GameEvent {}
-    record MoveMade(GameId gameId, MoveResult result) implements GameEvent {}
-    record AiSuggestionProduced(GameId gameId, Direction suggestion) implements GameEvent {}
+    record GameStarted(String clientId, BoardState initialBoard) implements GameEvent {}
+    record MoveMade(String clientId, MoveResult result) implements GameEvent {}
+    record AiSuggestionProduced(String clientId, Direction suggestion) implements GameEvent {}
 }

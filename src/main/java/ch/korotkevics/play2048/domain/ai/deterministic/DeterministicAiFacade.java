@@ -20,7 +20,8 @@ public final class DeterministicAiFacade implements MoveSuggester {
      * 2. Number of empty cells (maximizing flexibility).
      * 3. Total score gained.
      */
-    public Optional<Direction> suggestNextMove(BoardState boardState) {
+    @Override
+    public Optional<Direction> suggestNextMove(BoardState boardState, ch.korotkevics.play2048.domain.ai.UserSettings settings) {
         return Stream.of(Direction.values())
                 .map(direction -> evaluateMove(boardState, direction))
                 .filter(MoveEvaluation::moved)

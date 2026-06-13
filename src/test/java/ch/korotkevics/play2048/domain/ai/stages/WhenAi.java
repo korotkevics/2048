@@ -1,6 +1,7 @@
 package ch.korotkevics.play2048.domain.ai.stages;
 
 import ch.korotkevics.play2048.domain.ai.MoveSuggester;
+import ch.korotkevics.play2048.domain.ai.UserSettings;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import com.tngtech.jgiven.Stage;
@@ -17,11 +18,14 @@ public class WhenAi extends Stage<WhenAi> {
     @ExpectedScenarioState
     private BoardState boardState;
 
+    @ExpectedScenarioState
+    private UserSettings settings;
+
     @ProvidedScenarioState
     private Optional<Direction> suggestion;
 
     public WhenAi the_ai_is_asked_for_a_move() {
-        suggestion = ai.suggestNextMove(boardState);
+        suggestion = ai.suggestNextMove(boardState, settings);
         return this;
     }
 }

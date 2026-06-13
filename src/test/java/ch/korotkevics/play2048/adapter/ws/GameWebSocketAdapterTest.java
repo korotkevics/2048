@@ -15,41 +15,39 @@ import static org.mockito.Mockito.verify;
 
 public class GameWebSocketAdapterTest {
 
+    private static final String CLIENT_ID = "test-client";
     private final SimpMessagingTemplate messagingTemplate = mock(SimpMessagingTemplate.class);
     private final GameWebSocketAdapter adapter = new GameWebSocketAdapter(messagingTemplate);
 
     @Test
     public void handlesGameStartedEvent() {
-        GameId id = GameId.generate();
-        DomainEventStream.GameStarted event = new DomainEventStream.GameStarted(id, null);
+        DomainEventStream.GameStarted event = new DomainEventStream.GameStarted(CLIENT_ID, null);
 
         adapter.handleGameStarted(event);
 
         ArgumentCaptor<GameWebSocketAdapter.GameEvent> captor = ArgumentCaptor.forClass(GameWebSocketAdapter.GameEvent.class);
-        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + id.value()), captor.capture());
+        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + CLIENT_ID), captor.capture());
         
         assertThat(captor.getValue().type()).isEqualTo("STARTED");
-        assertThat(captor.getValue().gameId()).isEqualTo(id.value().toString());
+        assertThat(captor.getValue().gameId()).isEqualTo(CLIENT_ID);
     }
 
     @Test
     public void handlesMoveMadeEvent() {
-        GameId id = GameId.generate();
         MoveResult result = mock(MoveResult.class);
-        DomainEventStream.MoveMade event = new DomainEventStream.MoveMade(id, result);
+        DomainEventStream.MoveMade event = new DomainEventStream.MoveMade(CLIENT_ID, result);
 
         adapter.handleMoveMade(event);
 
-        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + id.value()), eq(new GameWebSocketAdapter.GameEvent("MOVE", id.value().toString(), result)));
+        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + CLIENT_ID), eq(new GameWebSocketAdapter.GameEvent("MOVE", CLIENT_ID, result)));
     }
 
     @Test
     public void handlesAiSuggestionEvent() {
-        GameId id = GameId.generate();
-        DomainEventStream.AiSuggestionProduced event = new DomainEventStream.AiSuggestionProduced(id, Direction.UP);
+        DomainEventStream.AiSuggestionProduced event = new DomainEventStream.AiSuggestionProduced(CLIENT_ID, Direction.UP);
 
         adapter.handleAiSuggestion(event);
 
-        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + id.value()), eq(new GameWebSocketAdapter.GameEvent("AI_SUGGESTION", id.value().toString(), Direction.UP)));
+        verify(messagingTemplate).convertAndSend(eq("/topic/game/" + CLIENT_ID), eq(new GameWebSocketAdapter.GameEvent("AI_SUGGESTION", CLIENT_ID, Direction.UP)));
     }
 }

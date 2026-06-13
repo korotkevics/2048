@@ -4,17 +4,42 @@ import axios from 'axios';
 const API_BASE = '/api/game';
 const SETTINGS_API_BASE = '/api/settings';
 
+const getClientId = () => {
+    let id = localStorage.getItem('play2048_client_id');
+    if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem('play2048_client_id', id);
+    }
+    return id;
+};
+
+const api = axios.create({
+    headers: {
+        'X-Client-ID': getClientId()
+    }
+});
+
 export const startNewGame = async (): Promise<string> => {
-    const response = await axios.post(`${API_BASE}`);
+    const response = await api.post(`${API_BASE}`);
     return response.data.gameId;
 };
 
-export const makeMove = async (gameId: string, direction: string): Promise<void> => {
-    await axios.post(`${API_BASE}/${gameId}/move`, { direction });
+export const getCurrentGame = async (): Promise<any> => {
+    try {
+        const response = await api.get(`${API_BASE}/current`);
+        return response.data;
+    } catch (e) {
+        return null;
+    }
 };
 
-export const requestAiSuggestion = async (gameId: string): Promise<void> => {
-    await axios.post(`${API_BASE}/${gameId}/ai`);
+export const makeMove = async (direction: string): Promise<any> => {
+    const response = await api.post(`${API_BASE}/move`, { direction });
+    return response.data; // Sync return
+};
+
+export const requestAiSuggestion = async (): Promise<void> => {
+    await api.post(`${API_BASE}/ai`);
 };
 
 export interface Settings {
@@ -25,11 +50,13 @@ export interface Settings {
 }
 
 export const getSettings = async (): Promise<Settings> => {
-    const response = await axios.get(SETTINGS_API_BASE);
+    const response = await api.get(SETTINGS_API_BASE);
     return response.data;
 };
 
 export const updateSettings = async (settings: Partial<Settings>): Promise<void> => {
-    await axios.put(SETTINGS_API_BASE, settings);
+    await api.put(SETTINGS_API_BASE, settings);
 };
+
+export { getClientId };
 

@@ -8,13 +8,34 @@ services:
     depends_on:
       - play2048-app
 
+  db:
+    image: postgres:16-alpine
+    container_name: play2048-db
+    environment:
+      POSTGRES_DB: play2048
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d play2048"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   play2048-app:
     build: .
     ports:
       - "8085:8080"
     environment:
       - OLLAMA_API_URL=http://ollama:11434
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/play2048
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
+      db:
+        condition: service_healthy
       ollama-init:
         condition: service_completed_successfully
 

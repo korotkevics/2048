@@ -6,5 +6,5 @@ import ch.korotkevics.play2048.domain.engine.Direction;
 import java.util.Optional;
 
 public interface MoveSuggester {
-    Optional<Direction> suggestNextMove(BoardState boardState);
+    Optional<Direction> suggestNextMove(BoardState boardState, UserSettings settings);
 }

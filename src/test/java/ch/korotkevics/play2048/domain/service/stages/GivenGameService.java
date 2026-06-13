@@ -25,15 +25,23 @@ public class GivenGameService extends Stage<GivenGameService> {
     @ProvidedScenarioState
     private MoveSuggester aiFacade;
 
+    @ProvidedScenarioState
+    private ch.korotkevics.play2048.domain.service.GameRepository gameRepository;
+
+    @ProvidedScenarioState
+    private ch.korotkevics.play2048.domain.service.SettingsRepository settingsRepository;
+
     public GivenGameService a_game_service() {
         eventStream = mock(DomainEventStream.class);
         aiFacade = mock(MoveSuggester.class);
-        this.gameService = new GameService(aiFacade, eventStream, new ch.korotkevics.play2048.domain.engine.GameSettings());
+        gameRepository = mock(ch.korotkevics.play2048.domain.service.GameRepository.class);
+        settingsRepository = mock(ch.korotkevics.play2048.domain.service.SettingsRepository.class);
+        this.gameService = new GameService(gameRepository, settingsRepository, aiFacade, eventStream);
         return this;
     }
 
     public GivenGameService an_ai_that_suggests(Direction direction) {
-        Mockito.when(aiFacade.suggestNextMove(any())).thenReturn(Optional.of(direction));
+        Mockito.when(aiFacade.suggestNextMove(any(), any())).thenReturn(Optional.of(direction));
         return this;
     }
 }

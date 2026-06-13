@@ -16,21 +16,21 @@ public final class GameWebSocketAdapter {
 
     @EventListener
     public void handleGameStarted(DomainEventStream.GameStarted event) {
-        publish(event.gameId().value().toString(), new GameEvent("STARTED", event.gameId().value().toString(), event.initialBoard()));
+        publish(event.clientId(), new GameEvent("STARTED", event.clientId(), event.initialBoard()));
     }
 
     @EventListener
     public void handleMoveMade(DomainEventStream.MoveMade event) {
-        publish(event.gameId().value().toString(), new GameEvent("MOVE", event.gameId().value().toString(), event.result()));
+        publish(event.clientId(), new GameEvent("MOVE", event.clientId(), event.result()));
     }
 
     @EventListener
     public void handleAiSuggestion(DomainEventStream.AiSuggestionProduced event) {
-        publish(event.gameId().value().toString(), new GameEvent("AI_SUGGESTION", event.gameId().value().toString(), event.suggestion()));
+        publish(event.clientId(), new GameEvent("AI_SUGGESTION", event.clientId(), event.suggestion()));
     }
 
-    private void publish(String gameId, GameEvent event) {
-        messagingTemplate.convertAndSend("/topic/game/" + gameId, event);
+    private void publish(String clientId, GameEvent event) {
+        messagingTemplate.convertAndSend("/topic/game/" + clientId, event);
     }
 
     public record GameEvent(String type, String gameId, Object payload) {}

@@ -14,36 +14,34 @@ import static org.mockito.Mockito.when;
 
 public class GameRestControllerTest {
 
+    private static final String CLIENT_ID = "test-client";
     private final GameService gameService = mock(GameService.class);
     private final GameRestController controller = new GameRestController(gameService);
 
     @Test
     public void startNewGameDelegatesToServiceAndConvertsId() {
         GameId id = GameId.generate();
-        when(gameService.startNewGame()).thenReturn(id);
+        when(gameService.startNewGame(CLIENT_ID)).thenReturn(id);
 
-        GameRestController.GameResponse response = controller.startNewGame();
+        GameRestController.GameResponse response = controller.startNewGame(CLIENT_ID);
 
         assertThat(response.gameId()).isEqualTo(id.value().toString());
-        verify(gameService).startNewGame();
+        verify(gameService).startNewGame(CLIENT_ID);
     }
 
     @Test
     public void makeMoveDelegatesToService() {
-        UUID id = UUID.randomUUID();
         GameRestController.MoveRequest request = new GameRestController.MoveRequest(Direction.LEFT);
 
-        controller.makeMove(id, request);
+        controller.makeMove(CLIENT_ID, request);
 
-        verify(gameService).makeMove(new GameId(id), Direction.LEFT);
+        verify(gameService).makeMove(CLIENT_ID, Direction.LEFT);
     }
 
     @Test
     public void requestAiSuggestionDelegatesToService() {
-        UUID id = UUID.randomUUID();
+        controller.requestAiSuggestion(CLIENT_ID);
 
-        controller.requestAiSuggestion(id);
-
-        verify(gameService).requestAiSuggestion(new GameId(id));
+        verify(gameService).requestAiSuggestion(CLIENT_ID);
     }
 }
