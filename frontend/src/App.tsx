@@ -10,6 +10,8 @@ import { GameHeader } from './components/GameHeader';
 import { GameGrid } from './components/GameGrid';
 import { GameControls } from './components/GameControls';
 import { GameOverOverlay, StartOverlay } from './components/Overlays';
+import { GameContainer } from './components/GameContainer';
+import { BoardWrapper } from './components/BoardWrapper';
 import './index.css';
 
 function App() {
@@ -124,7 +126,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-[#002244]">
+    <GameContainer>
       <GameHeader 
         score={game.score} 
         gameId={game.gameId} 
@@ -132,12 +134,12 @@ function App() {
         onOpenSettings={() => setShowSettings(true)}
       />
 
-      <div className="bg-[#002244] p-4 rounded-xl shadow-2xl relative">
+      <BoardWrapper>
         {(game.gameOver || game.won) && <GameOverOverlay won={game.won} />}
         {!game.gameId && <StartOverlay />}
         
         <GameGrid boardState={game.boardState} />
-      </div>
+      </BoardWrapper>
 
       <GameControls 
         gameId={game.gameId}
@@ -147,7 +149,7 @@ function App() {
       />
 
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-    </div>
+    </GameContainer>
   );
 }
 
