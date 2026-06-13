@@ -34,7 +34,12 @@ public class GameConfig {
     }
 
     @Bean
-    public GameService gameService(MoveSuggester aiFacade, DomainEventStream eventStream) {
-        return new GameService(aiFacade, eventStream);
+    public ch.korotkevics.play2048.domain.engine.GameSettings gameSettings() {
+        return new ch.korotkevics.play2048.domain.engine.GameSettings();
+    }
+
+    @Bean
+    public GameService gameService(MoveSuggester aiFacade, DomainEventStream eventStream, ch.korotkevics.play2048.domain.engine.GameSettings gameSettings) {
+        return new GameService(aiFacade, eventStream, gameSettings);
     }
 }

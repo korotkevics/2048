@@ -1,15 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
 import { setGameId, updateGameState, setAiSuggestion } from './store/gameSlice';
 import type { Direction } from './store/gameSlice';
 import { startNewGame, makeMove, requestAiSuggestion } from './services/api';
+import { SettingsModal } from './components/SettingsModal';
 import './index.css';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const game = useSelector((state: RootState) => state.game);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (game.gameId) {
@@ -84,7 +86,16 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h1 className="text-5xl font-bold mb-4 text-[#776e65]">2048</h1>
+      <div className="w-full max-w-md flex justify-between items-center mb-4">
+        <h1 className="text-5xl font-bold text-[#776e65]">2048</h1>
+        <button 
+          onClick={() => setShowSettings(true)}
+          className="text-3xl hover:opacity-80 transition-opacity"
+          title="Settings"
+        >
+          ⚙️
+        </button>
+      </div>
       
       <div className="flex w-full max-w-md justify-between items-center mb-6">
         <div className="flex gap-4">
@@ -144,6 +155,8 @@ function App() {
           </div>
         )}
       </div>
+
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

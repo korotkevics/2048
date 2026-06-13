@@ -28,7 +28,7 @@ public class GivenGameService extends Stage<GivenGameService> {
     public GivenGameService a_game_service() {
         eventStream = mock(DomainEventStream.class);
         aiFacade = mock(MoveSuggester.class);
-        gameService = new GameService(aiFacade, eventStream);
+        this.gameService = new GameService(aiFacade, eventStream, new ch.korotkevics.play2048.domain.engine.GameSettings());
         return this;
     }
 

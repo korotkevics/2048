@@ -18,15 +18,17 @@ public final class GameService {
     private final Map<GameId, Game2048Engine> activeGames = new ConcurrentHashMap<>();
     private final MoveSuggester aiFacade;
     private final DomainEventStream eventStream;
+    private final ch.korotkevics.play2048.domain.engine.GameSettings gameSettings;
 
-    public GameService(MoveSuggester aiFacade, DomainEventStream eventStream) {
+    public GameService(MoveSuggester aiFacade, DomainEventStream eventStream, ch.korotkevics.play2048.domain.engine.GameSettings gameSettings) {
         this.aiFacade = aiFacade;
         this.eventStream = eventStream;
+        this.gameSettings = gameSettings;
     }
 
     public GameId startNewGame() {
         GameId gameId = GameId.generate();
-        Game2048Engine engine = Game2048Engine.newGame();
+        Game2048Engine engine = Game2048Engine.newGame(Game2048Engine.DEFAULT_SIZE, new java.util.Random(), gameSettings);
         activeGames.put(gameId, engine);
         eventStream.publish(new DomainEventStream.GameStarted(gameId, engine.boardState()));
         return gameId;
