@@ -112,17 +112,17 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
   const isValidSum = Math.abs(currentSum - 1.0) < 0.001;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#faf8ef] p-6 rounded-lg shadow-xl w-96 text-[#776e65]">
-        <h2 className="text-2xl font-bold mb-4">Settings</h2>
-        <div className="mb-4">
-            <span className="text-sm font-bold opacity-80 block mb-2">Version: {settings.version}</span>
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-sm text-[#002244] transform transition-all">
+        <h2 className="text-3xl font-extrabold mb-1 tracking-tight text-[#002244]">Settings</h2>
+        <div className="mb-6">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Version {settings.version}</span>
         </div>
         
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2">AI Strategy</label>
+        <div className="mb-5">
+          <label className="block text-sm font-bold text-slate-700 mb-2">AI Strategy</label>
           <select 
-            className="w-full p-2 border rounded bg-white"
+            className="w-full p-2.5 border border-slate-300 rounded-lg bg-slate-50 text-[#002244] font-medium focus:ring-2 focus:ring-[#00509a] focus:border-[#00509a] transition-shadow outline-none"
             value={settings.aiType} 
             onChange={(e) => handleChangeAiType(e.target.value)}
           >
@@ -131,10 +131,10 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           </select>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-2">Initial Tile Count</label>
+        <div className="mb-5">
+          <label className="block text-sm font-bold text-slate-700 mb-2">Initial Tile Count</label>
           <select 
-            className="w-full p-2 border rounded bg-white"
+            className="w-full p-2.5 border border-slate-300 rounded-lg bg-slate-50 text-[#002244] font-medium focus:ring-2 focus:ring-[#00509a] focus:border-[#00509a] transition-shadow outline-none"
             value={settings.initialTileCount} 
             onChange={(e) => handleChangeInitialCount(Number(e.target.value))}
           >
@@ -145,39 +145,41 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
           </select>
         </div>
 
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm font-bold">Tile Probabilities</label>
-            <button onClick={handleAddProb} className="text-xs bg-[#8f7a66] text-white px-2 py-1 rounded hover:bg-[#9f8b77]">Add Tile</button>
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-3">
+            <label className="block text-sm font-bold text-slate-700">Tile Probabilities</label>
+            <button onClick={handleAddProb} className="text-xs bg-[#00509a] text-white px-3 py-1.5 rounded-md hover:bg-[#003d7a] transition-colors font-bold shadow-sm">Add Tile</button>
           </div>
-          <div className="max-h-40 overflow-y-auto border rounded p-2 bg-white">
+          <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3 bg-slate-50 shadow-inner">
              {Object.entries(settings.tileProbabilities || {}).map(([val, prob]) => (
-               <div key={val} className="flex items-center gap-2 mb-2">
-                 <span className="font-bold w-12 text-right">{val} :</span>
+               <div key={val} className="flex items-center gap-3 mb-2 last:mb-0">
+                 <div className="w-12 h-8 bg-[#002244] text-white font-bold rounded flex items-center justify-center text-sm shadow-sm">{val}</div>
                  <input 
                    type="number" 
                    step="0.05"
                    min="0"
                    max="1"
-                   className="border rounded w-20 p-1 flex-1 text-center"
+                   className="border border-slate-300 rounded-md w-24 p-1.5 flex-1 text-center font-medium text-[#002244] focus:ring-2 focus:ring-[#00509a] outline-none"
                    value={prob}
                    onChange={(e) => handleProbChange(val, parseFloat(e.target.value))}
                  />
-                 <button onClick={() => handleRemoveProb(val)} className="text-red-500 font-bold ml-2 w-6 text-center hover:bg-red-100 rounded">X</button>
+                 <button onClick={() => handleRemoveProb(val)} className="text-red-500 hover:text-white font-bold ml-1 w-8 h-8 flex items-center justify-center hover:bg-red-500 rounded transition-colors" title="Remove">✕</button>
                </div>
              ))}
              {Object.keys(settings.tileProbabilities || {}).length === 0 && (
-                 <div className="text-sm opacity-70 text-center py-2">No tiles configured.</div>
+                 <div className="text-sm text-slate-500 font-medium text-center py-4">No tiles configured.</div>
              )}
           </div>
           {!isValidSum && (
-            <p className="text-xs mt-1 text-red-500 font-bold">Sum must be 1.0 (currently {currentSum.toFixed(2)}). Not saved to server.</p>
+            <p className="text-xs mt-2 text-red-600 font-bold bg-red-50 p-2 rounded border border-red-100 flex items-center">
+               <span className="mr-1">⚠️</span> Sum must be 1.0 (currently {currentSum.toFixed(2)}). Not saved.
+            </p>
           )}
         </div>
 
         <button 
           onClick={onClose}
-          className="w-full bg-[#8f7a66] text-white font-bold py-2 px-4 rounded hover:bg-[#9f8b77] transition-colors"
+          className="w-full bg-[#002244] text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-[#001833] transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-[#002244]"
         >
           Close
         </button>
