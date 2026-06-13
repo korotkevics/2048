@@ -7,7 +7,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #faf8ef;
+  background-image: url('./assets/bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: #776e65;
 }
 
