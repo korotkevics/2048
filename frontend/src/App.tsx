@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
-import { setGameId, updateGameState, setAiSuggestion } from './store/gameSlice';
+import { setGameId, updateGameState, setAiSuggestion, resetGame } from './store/gameSlice';
 import type { Direction } from './store/gameSlice';
 import { startNewGame, makeMove, requestAiSuggestion } from './services/api';
 import { SettingsModal } from './components/SettingsModal';
@@ -164,6 +164,15 @@ function App() {
             <div className="text-2xl font-bold">{game.score}</div>
           </div>
         </div>
+        
+        {game.gameId && (
+          <button 
+            onClick={() => dispatch(resetGame())}
+            className="bg-[#00509a] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#003d7a] transition-colors focus:ring-2 focus:ring-[#00509a] focus:ring-offset-2 focus:ring-offset-slate-50"
+          >
+            New Game
+          </button>
+        )}
       </div>
 
       <div className="bg-[#002244] p-4 rounded-xl shadow-2xl relative">

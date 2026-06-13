@@ -64,9 +64,18 @@ const gameSlice = createSlice({
         },
         setAiSuggestion(state, action: PayloadAction<Direction>) {
             state.aiSuggestion = action.payload;
+        },
+        resetGame(state) {
+            state.gameId = null;
+            state.boardState = null;
+            state.score = 0;
+            state.gameOver = false;
+            state.won = false;
+            state.aiSuggestion = null;
+            state.status = 'idle';
         }
     }
 });
 
-export const { setGameId, updateGameState, setAiSuggestion } = gameSlice.actions;
+export const { setGameId, updateGameState, setAiSuggestion, resetGame } = gameSlice.actions;
 export default gameSlice.reducer;
