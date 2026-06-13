@@ -85,12 +85,15 @@ function App() {
 
   const isStarting = useRef(false);
 
-  const handleStartGame = async () => {
+  const handleStartGame = async (initialDirection?: Direction) => {
     if (isStarting.current) return;
     isStarting.current = true;
     try {
       const id = await startNewGame();
       dispatch(setGameId(id));
+      if (initialDirection) {
+        await makeMove(id, initialDirection);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -111,7 +114,7 @@ function App() {
       e.preventDefault(); // Prevent scrolling
 
       if (game.status !== 'playing' || !game.gameId) {
-        handleStartGame();
+        handleStartGame(direction);
         return;
       }
 
@@ -151,12 +154,16 @@ function App() {
       </div>
 
       <div className="bg-[#002244] p-4 rounded-xl shadow-2xl relative">
-        {(game.gameOver || game.won || !game.gameId) && (
+        {(game.gameOver || game.won) && (
           <div className="absolute inset-0 bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
-            {game.gameId && (
-              <h2 className="text-4xl font-extrabold mb-2 text-[#002244]">{game.won ? "You Win!" : "Game Over!"}</h2>
-            )}
-            <p className="text-[#00509a] font-bold text-xl mt-4 animate-pulse">Press any Arrow Key to start</p>
+            <h2 className="text-4xl font-extrabold mb-2 text-[#002244]">{game.won ? "You Win!" : "Game Over!"}</h2>
+            <p className="text-[#00509a] font-bold text-xl mt-4 animate-pulse">Press any Arrow Key to restart</p>
+          </div>
+        )}
+
+        {!game.gameId && (
+          <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none rounded-xl">
+            <p className="text-white/40 font-bold tracking-widest uppercase animate-pulse">Press Arrow Key</p>
           </div>
         )}
         
