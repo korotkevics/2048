@@ -22,6 +22,7 @@ export interface MoveResult {
     moved: boolean;
     scoreGained: number;
     score: number;
+    highScore: number;
     gameOver: boolean;
     won: boolean;
     boardState: BoardState;
@@ -32,6 +33,7 @@ interface GameState {
     gameId: string | null;
     boardState: BoardState | null;
     score: number;
+    highScore: number;
     gameOver: boolean;
     won: boolean;
     aiSuggestion: Direction | null;
@@ -43,6 +45,7 @@ const initialState: GameState = {
     gameId: null,
     boardState: null,
     score: 0,
+    highScore: 0,
     gameOver: false,
     won: false,
     aiSuggestion: null,
@@ -70,6 +73,7 @@ const gameSlice = createSlice({
                 state.boardState = action.payload.boardState;
             }
             state.score = action.payload.score;
+            state.highScore = action.payload.highScore;
             state.gameOver = action.payload.gameOver;
             state.won = action.payload.won;
             state.aiSuggestion = null;

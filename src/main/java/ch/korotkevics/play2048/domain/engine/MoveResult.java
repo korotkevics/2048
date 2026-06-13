@@ -9,6 +9,7 @@ public record MoveResult(
         boolean moved,
         int scoreGained,
         int score,
+        int highScore,
         boolean gameOver,
         boolean won,
         BoardState boardState,

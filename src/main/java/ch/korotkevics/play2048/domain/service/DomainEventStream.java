@@ -11,7 +11,7 @@ public interface DomainEventStream {
         String clientId();
     }
 
-    record GameStarted(String clientId, BoardState initialBoard) implements GameEvent {}
+    record GameStarted(String clientId, BoardState initialBoard, int highScore) implements GameEvent {}
     record MoveMade(String clientId, MoveResult result) implements GameEvent {}
     record AiSuggestionProduced(String clientId, Direction suggestion) implements GameEvent {}
 }

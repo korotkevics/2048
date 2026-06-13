@@ -21,19 +21,20 @@ public final class SettingsRestController {
     }
 
     @GetMapping
-    public SettingsResponse getSettings(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId) {
+    public SettingsResponse getSettings(@RequestHeader(value = CLIENT_ID_HEADER) String clientId) {
         var bundle = gameService.getSettings(clientId);
         return new SettingsResponse(
                 "1.1", 
                 bundle.userSettings().getAiType().name(), 
                 bundle.gameSettings().getInitialTileCount(),
-                bundle.gameSettings().getSpawnConfiguration().getProbabilities()
+                bundle.gameSettings().getSpawnConfiguration().getProbabilities(),
+                bundle.highScore()
         );
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateSettings(@RequestHeader(value = CLIENT_ID_HEADER, defaultValue = "default") String clientId,
+    public void updateSettings(@RequestHeader(value = CLIENT_ID_HEADER) String clientId,
                                @RequestBody SettingsUpdateRequest request) {
         var bundle = gameService.getSettings(clientId);
         var userSettings = bundle.userSettings();
@@ -71,6 +72,6 @@ public final class SettingsRestController {
         gameService.updateSettings(clientId, userSettings, gameSettings);
     }
 
-    public record SettingsResponse(String version, String aiType, int initialTileCount, Map<Integer, Double> tileProbabilities) {}
+    public record SettingsResponse(String version, String aiType, int initialTileCount, Map<Integer, Double> tileProbabilities, int highScore) {}
     public record SettingsUpdateRequest(String aiType, Integer initialTileCount, Map<Integer, Double> tileProbabilities) {}
 }

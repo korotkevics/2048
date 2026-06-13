@@ -1,7 +1,7 @@
 package ch.korotkevics.play2048.domain.service.stages;
 
 import ch.korotkevics.play2048.domain.engine.Direction;
-import ch.korotkevics.play2048.domain.service.GameId;
+import ch.korotkevics.play2048.domain.engine.MoveResult;
 import ch.korotkevics.play2048.domain.service.GameService;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
@@ -15,10 +15,10 @@ public class WhenGameService extends Stage<WhenGameService> {
     private GameService gameService;
 
     @ProvidedScenarioState
-    private GameId gameId;
+    private MoveResult moveResult;
 
     public WhenGameService a_new_game_is_started() {
-        gameId = gameService.startNewGame(CLIENT_ID);
+        moveResult = gameService.startNewGame(CLIENT_ID);
         return this;
     }
 

@@ -5,23 +5,29 @@ const API_BASE = '/api/game';
 const SETTINGS_API_BASE = '/api/settings';
 
 const getClientId = () => {
-    let id = localStorage.getItem('play2048_client_id');
-    if (!id) {
+    let id = sessionStorage.getItem('play2048_client_id');
+    if (!id || id === 'default') {
         id = crypto.randomUUID();
-        localStorage.setItem('play2048_client_id', id);
+        sessionStorage.setItem('play2048_client_id', id);
+        console.log(`[API] Generated new Session Client ID: ${id}`);
     }
     return id;
 };
 
-const api = axios.create({
-    headers: {
-        'X-Client-ID': getClientId()
-    }
+// Create an instance
+const api = axios.create();
+
+// Add a request interceptor to always get the LATEST ID from sessionStorage
+api.interceptors.request.use((config) => {
+    const id = getClientId();
+    config.headers['X-Client-ID'] = id;
+    return config;
 });
 
-export const startNewGame = async (): Promise<string> => {
+export const startNewGame = async (): Promise<any> => {
+    console.log('[API] Starting new game...');
     const response = await api.post(`${API_BASE}`);
-    return response.data.gameId;
+    return response.data;
 };
 
 export const getCurrentGame = async (): Promise<any> => {
@@ -35,7 +41,7 @@ export const getCurrentGame = async (): Promise<any> => {
 
 export const makeMove = async (direction: string): Promise<any> => {
     const response = await api.post(`${API_BASE}/move`, { direction });
-    return response.data; // Sync return
+    return response.data;
 };
 
 export const requestAiSuggestion = async (): Promise<void> => {
@@ -56,6 +62,7 @@ export interface Settings {
     aiType: string;
     initialTileCount: number;
     tileProbabilities: Record<string, number>;
+    highScore: number;
 }
 
 export const getSettings = async (): Promise<Settings> => {
@@ -68,4 +75,3 @@ export const updateSettings = async (settings: Partial<Settings>): Promise<void>
 };
 
 export { getClientId };
-

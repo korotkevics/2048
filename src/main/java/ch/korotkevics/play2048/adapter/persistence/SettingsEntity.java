@@ -21,14 +21,17 @@ public class SettingsEntity {
 
     private String version;
 
+    private int highScore;
+
     public SettingsEntity() {}
 
-    public SettingsEntity(String clientId, String aiType, int initialTileCount, String tileProbabilitiesJson, String version) {
+    public SettingsEntity(String clientId, String aiType, int initialTileCount, String tileProbabilitiesJson, String version, int highScore) {
         this.clientId = clientId;
         this.aiType = aiType;
         this.initialTileCount = initialTileCount;
         this.tileProbabilitiesJson = tileProbabilitiesJson;
         this.version = version;
+        this.highScore = highScore;
     }
 
     public String getClientId() { return clientId; }
@@ -45,4 +48,7 @@ public class SettingsEntity {
 
     public String getVersion() { return version; }
     public void setVersion(String version) { this.version = version; }
+
+    public int getHighScore() { return highScore; }
+    public void setHighScore(int highScore) { this.highScore = highScore; }
 }

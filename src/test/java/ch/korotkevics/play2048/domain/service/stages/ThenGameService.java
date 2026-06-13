@@ -1,7 +1,7 @@
 package ch.korotkevics.play2048.domain.service.stages;
 
+import ch.korotkevics.play2048.domain.engine.MoveResult;
 import ch.korotkevics.play2048.domain.service.DomainEventStream;
-import ch.korotkevics.play2048.domain.service.GameId;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 
@@ -12,13 +12,13 @@ import static org.mockito.Mockito.verify;
 public class ThenGameService extends Stage<ThenGameService> {
 
     @ExpectedScenarioState
-    private GameId gameId;
+    private MoveResult moveResult;
 
     @ExpectedScenarioState
     private DomainEventStream eventStream;
 
     public ThenGameService a_game_id_is_generated() {
-        assertThat(gameId).isNotNull();
+        assertThat(moveResult).isNotNull();
         return this;
     }
 

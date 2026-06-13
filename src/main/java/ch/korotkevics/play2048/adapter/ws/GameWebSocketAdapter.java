@@ -16,7 +16,7 @@ public final class GameWebSocketAdapter {
 
     @EventListener
     public void handleGameStarted(DomainEventStream.GameStarted event) {
-        publish(event.clientId(), new GameEvent("STARTED", event.clientId(), event.initialBoard()));
+        publish(event.clientId(), new GameEvent("STARTED", event.clientId(), new StartedPayload(event.initialBoard(), event.highScore())));
     }
 
     @EventListener
@@ -34,4 +34,5 @@ public final class GameWebSocketAdapter {
     }
 
     public record GameEvent(String type, String gameId, Object payload) {}
+    public record StartedPayload(ch.korotkevics.play2048.domain.engine.BoardState initialBoard, int highScore) {}
 }

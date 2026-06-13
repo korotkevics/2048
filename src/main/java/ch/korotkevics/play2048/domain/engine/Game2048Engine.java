@@ -40,7 +40,9 @@ public final class Game2048Engine {
 
     public static Game2048Engine newGame(int size, Random random, GameSettings settings) {
         Board emptyBoard = new Board(size);
-        return new Game2048Engine(emptyBoard, 0, random, settings);
+        TileSpawner spawner = new TileSpawner();
+        Board seededBoard = spawner.spawnInitialTiles(emptyBoard, settings, random);
+        return new Game2048Engine(seededBoard, 0, random, settings);
     }
 
     public static Game2048Engine from(int[][] grid) {
@@ -58,33 +60,6 @@ public final class Game2048Engine {
     public MoveResult move(Direction direction) {
         List<GlobalTileMove> deltas = new ArrayList<>();
         
-        if (board.emptyCells().size() == board.size() * board.size()) {
-            Board seededBoard = tileSpawner.spawnInitialTiles(board, settings, random);
-            
-            // Track initial spawns as deltas
-            for (int r = 0; r < seededBoard.size(); r++) {
-                for (int c = 0; c < seededBoard.size(); c++) {
-                    int val = seededBoard.getValue(r, c);
-                    if (val != 0) {
-                        deltas.add(new GlobalTileMove(r, c, r, c, val, false, true));
-                    }
-                }
-            }
-
-            Game2048Engine finalEngine = new Game2048Engine(seededBoard, score, random, settings);
-            return new MoveResult(
-                    direction,
-                    true,
-                    0,
-                    score,
-                    finalEngine.isGameOver(),
-                    finalEngine.isWon(),
-                    finalEngine.boardState(),
-                    deltas,
-                    finalEngine
-            );
-        }
-
         MoveResult simResult = simulateMove(direction);
         if (simResult.moved()) {
             deltas.addAll(simResult.deltas());
@@ -107,6 +82,7 @@ public final class Game2048Engine {
                     true,
                     simResult.scoreGained(),
                     simResult.score(),
+                    simResult.score(), // Temp high score, will be updated by GameService
                     finalEngine.isGameOver(),
                     finalEngine.isWon(),
                     finalEngine.boardState(),
@@ -156,6 +132,7 @@ public final class Game2048Engine {
                 moved,
                 scoreGained,
                 finalScore,
+                finalScore, // Temp high score
                 nextEngine.isGameOver(),
                 nextEngine.isWon(),
                 nextEngine.boardState(),

@@ -1,11 +1,12 @@
 interface GameHeaderProps {
   score: number;
+  highScore: number;
   gameId: string | null;
   onReset: () => void;
   onOpenSettings: () => void;
 }
 
-export const GameHeader = ({ score, gameId, onReset, onOpenSettings }: GameHeaderProps) => {
+export const GameHeader = ({ score, highScore, gameId, onReset, onOpenSettings }: GameHeaderProps) => {
   return (
     <>
       <div className="w-full max-w-md flex justify-between items-center mb-4">
@@ -24,6 +25,10 @@ export const GameHeader = ({ score, gameId, onReset, onOpenSettings }: GameHeade
           <div className="bg-[#00509a] rounded-lg p-2 px-6 text-white text-center shadow-md">
             <div className="text-xs font-bold tracking-widest opacity-90 uppercase">Score</div>
             <div className="text-2xl font-bold">{score}</div>
+          </div>
+          <div className="bg-[#002244] rounded-lg p-2 px-6 text-white text-center shadow-md">
+            <div className="text-xs font-bold tracking-widest opacity-90 uppercase">Best</div>
+            <div className="text-2xl font-bold">{highScore}</div>
           </div>
         </div>
         

@@ -5,7 +5,9 @@ import ch.korotkevics.play2048.domain.engine.MoveResult;
 import ch.korotkevics.play2048.domain.service.DomainEventStream;
 import ch.korotkevics.play2048.domain.service.GameId;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,9 +21,14 @@ public class GameWebSocketAdapterTest {
     private final SimpMessagingTemplate messagingTemplate = mock(SimpMessagingTemplate.class);
     private final GameWebSocketAdapter adapter = new GameWebSocketAdapter(messagingTemplate);
 
+    @BeforeMethod
+    public void setUp() {
+        Mockito.reset(messagingTemplate);
+    }
+
     @Test
     public void handlesGameStartedEvent() {
-        DomainEventStream.GameStarted event = new DomainEventStream.GameStarted(CLIENT_ID, null);
+        DomainEventStream.GameStarted event = new DomainEventStream.GameStarted(CLIENT_ID, null, 0);
 
         adapter.handleGameStarted(event);
 

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 @Component
 public class DatabaseGameAdapter implements GameRepository {
@@ -68,10 +70,19 @@ public class DatabaseGameAdapter implements GameRepository {
                 java.util.Map<String, Double> probs = objectMapper.readValue(entity.getTileProbabilitiesJson(), new com.fasterxml.jackson.core.type.TypeReference<>() {});
                 GameSettings.TileSpawnConfiguration config = gs.getSpawnConfiguration();
                 
-                // Clear default
-                new java.util.ArrayList<>(config.getProbabilities().keySet()).forEach(config::remove);
-                
-                probs.forEach((k, v) -> config.update(Integer.parseInt(k), v));
+                Set<Integer> newKeys = new HashSet<>();
+                probs.forEach((k, v) -> {
+                    int val = Integer.parseInt(k);
+                    config.update(val, v);
+                    newKeys.add(val);
+                });
+
+                Set<Integer> currentKeys = new HashSet<>(config.getProbabilities().keySet());
+                for (Integer key : currentKeys) {
+                    if (!newKeys.contains(key)) {
+                        config.remove(key);
+                    }
+                }
                 return gs;
             } catch (Exception e) {
                 return new GameSettings();

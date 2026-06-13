@@ -8,8 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class DatabaseSettingsAdapter implements SettingsRepository {
@@ -24,7 +26,7 @@ public class DatabaseSettingsAdapter implements SettingsRepository {
 
     @Override
     @Transactional
-    public void save(String clientId, UserSettings userSettings, GameSettings gameSettings) {
+    public void save(String clientId, UserSettings userSettings, GameSettings gameSettings, int highScore) {
         try {
             String probsJson = objectMapper.writeValueAsString(gameSettings.getSpawnConfiguration().getProbabilities());
             SettingsEntity entity = repository.findById(clientId)
@@ -34,7 +36,8 @@ public class DatabaseSettingsAdapter implements SettingsRepository {
             entity.setAiType(userSettings.getAiType().name());
             entity.setInitialTileCount(gameSettings.getInitialTileCount());
             entity.setTileProbabilitiesJson(probsJson);
-            entity.setVersion("1.1"); // Default version as in controller
+            entity.setVersion("1.1"); 
+            entity.setHighScore(highScore);
             
             repository.save(entity);
         } catch (JsonProcessingException e) {
@@ -54,14 +57,23 @@ public class DatabaseSettingsAdapter implements SettingsRepository {
                 Map<String, Double> probs = objectMapper.readValue(entity.getTileProbabilitiesJson(), new com.fasterxml.jackson.core.type.TypeReference<>() {});
                 GameSettings.TileSpawnConfiguration config = gs.getSpawnConfiguration();
                 
-                // Clear defaults
-                for (Integer key : new java.util.ArrayList<>(config.getProbabilities().keySet())) {
-                    config.remove(key);
+                // Track which keys are in the new configuration
+                Set<Integer> newKeys = new HashSet<>();
+                probs.forEach((k, v) -> {
+                    int val = Integer.parseInt(k);
+                    config.update(val, v);
+                    newKeys.add(val);
+                });
+
+                // Remove only the default keys that are NOT in the new configuration
+                Set<Integer> currentKeys = new HashSet<>(config.getProbabilities().keySet());
+                for (Integer key : currentKeys) {
+                    if (!newKeys.contains(key)) {
+                        config.remove(key);
+                    }
                 }
                 
-                probs.forEach((k, v) -> config.update(Integer.parseInt(k), v));
-                
-                return new SettingsBundle(us, gs);
+                return new SettingsBundle(us, gs, entity.getHighScore());
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Failed to deserialize settings", e);
             }

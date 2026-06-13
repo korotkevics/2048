@@ -1,11 +1,12 @@
 package ch.korotkevics.play2048.adapter.rest;
 
+import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
-import ch.korotkevics.play2048.domain.service.GameId;
+import ch.korotkevics.play2048.domain.engine.MoveResult;
 import ch.korotkevics.play2048.domain.service.GameService;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -19,13 +20,13 @@ public class GameRestControllerTest {
     private final GameRestController controller = new GameRestController(gameService);
 
     @Test
-    public void startNewGameDelegatesToServiceAndConvertsId() {
-        GameId id = GameId.generate();
-        when(gameService.startNewGame(CLIENT_ID)).thenReturn(id);
+    public void startNewGameDelegatesToService() {
+        MoveResult result = new MoveResult(null, true, 0, 0, 0, false, false, new BoardState(new int[4][4]), Collections.emptyList(), null);
+        when(gameService.startNewGame(CLIENT_ID)).thenReturn(result);
 
-        GameRestController.GameResponse response = controller.startNewGame(CLIENT_ID);
+        MoveResult response = controller.startNewGame(CLIENT_ID);
 
-        assertThat(response.gameId()).isEqualTo(id.value().toString());
+        assertThat(response).isEqualTo(result);
         verify(gameService).startNewGame(CLIENT_ID);
     }
 

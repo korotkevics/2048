@@ -6,8 +6,8 @@ import ch.korotkevics.play2048.domain.engine.GameSettings;
 import java.util.Optional;
 
 public interface SettingsRepository {
-    void save(String clientId, UserSettings userSettings, GameSettings gameSettings);
+    void save(String clientId, UserSettings userSettings, GameSettings gameSettings, int highScore);
     Optional<SettingsBundle> findByClientId(String clientId);
 
-    record SettingsBundle(UserSettings userSettings, GameSettings gameSettings) {}
+    record SettingsBundle(UserSettings userSettings, GameSettings gameSettings, int highScore) {}
 }

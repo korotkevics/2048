@@ -36,6 +36,15 @@ public class GivenGameService extends Stage<GivenGameService> {
         aiFacade = mock(MoveSuggester.class);
         gameRepository = mock(ch.korotkevics.play2048.domain.service.GameRepository.class);
         settingsRepository = mock(ch.korotkevics.play2048.domain.service.SettingsRepository.class);
+
+        // Basic stubbing to make gameRepository work in tests
+        Mockito.doAnswer(invocation -> {
+            String cid = invocation.getArgument(0);
+            ch.korotkevics.play2048.domain.engine.Game2048Engine eng = invocation.getArgument(1);
+            Mockito.when(gameRepository.findByClientId(cid)).thenReturn(Optional.of(eng));
+            return null;
+        }).when(gameRepository).save(any(), any());
+
         this.gameService = new GameService(gameRepository, settingsRepository, aiFacade, eventStream);
         return this;
     }

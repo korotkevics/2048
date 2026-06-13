@@ -4,7 +4,7 @@ import { Client } from '@stomp/stompjs';
 import type { RootState, AppDispatch } from './store/store';
 import { setGameId, updateGameState, setAiSuggestion, resetGame } from './store/gameSlice';
 import type { Direction } from './store/gameSlice';
-import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId, undoMove } from './services/api';
+import { startNewGame, makeMove, requestAiSuggestion, getCurrentGame, getClientId } from './services/api';
 import { SettingsModal } from './components/SettingsModal';
 import { GameHeader } from './components/GameHeader';
 import { GameGrid } from './components/GameGrid';
@@ -20,76 +20,71 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
 
   const isStarting = useRef(false);
-  const pendingMoveRef = useRef<Direction | null>(null);
   const wsConnected = useRef(false);
   const clientId = getClientId();
 
-  useEffect(() => {
-    const resumeSession = async () => {
-      const activeGame = await getCurrentGame();
-      if (activeGame) {
-        dispatch(setGameId(clientId));
-        dispatch(updateGameState(activeGame));
-      }
-    };
-    resumeSession();
-  }, [dispatch, clientId]);
-
-  const handleStartGame = async (initialDirection?: Direction) => {
+  const handleStartAndMove = async (direction: Direction) => {
     if (isStarting.current) return;
     isStarting.current = true;
     try {
-      if (initialDirection) {
-        pendingMoveRef.current = initialDirection;
-      }
+      console.log('[App] Starting and moving:', direction);
+      // 1. Create the game
       await startNewGame();
       dispatch(setGameId(clientId));
+      
+      // 2. We could dispatch startResult here to show the tiles for a split second,
+      // but usually we want to just show the moved state.
+      
+      // 3. Immediately execute the move
+      const moveResult = await makeMove(direction);
+      if (moveResult) {
+        dispatch(updateGameState(moveResult));
+      }
     } catch (e) {
-      console.error(e);
+      console.error('[App] Failed to start and move:', e);
     } finally {
       isStarting.current = false;
     }
   };
 
+  const handleReset = async () => {
+    console.log('[App] Resetting to idle');
+    dispatch(resetGame());
+  };
+
+  useEffect(() => {
+    const initSession = async () => {
+      console.log('[App] Checking for existing session...');
+      const activeGame = await getCurrentGame();
+      if (activeGame) {
+        console.log('[App] Found active game, resuming.');
+        dispatch(setGameId(clientId));
+        dispatch(updateGameState(activeGame));
+      } else {
+        console.log('[App] No active game. Showing start screen.');
+      }
+    };
+    initSession();
+  }, [dispatch, clientId]);
+
   useEffect(() => {
     if (game.gameId) {
-      wsConnected.current = false;
       const client = new Client({
         brokerURL: `ws://${window.location.host}/ws-game`,
         onConnect: () => {
-          console.log('Connected to WS');
+          console.log('[WS] Connected to channel:', clientId);
           client.subscribe(`/topic/game/${clientId}`, (message) => {
             const event = JSON.parse(message.body);
-            if (event.type === 'STARTED') {
-              if (event.payload) {
-                dispatch(updateGameState({
-                  direction: "UP" as Direction,
-                  moved: true,
-                  scoreGained: 0,
-                  score: 0,
-                  gameOver: false,
-                  won: false,
-                  boardState: event.payload,
-                  deltas: []
-                }));
-              }
-            } else if (event.type === 'MOVE') {
+            if (event.type === 'MOVE') {
               dispatch(updateGameState(event.payload));
             } else if (event.type === 'AI_SUGGESTION') {
               dispatch(setAiSuggestion(event.payload));
             }
           });
-          
           wsConnected.current = true;
-          
-          if (pendingMoveRef.current) {
-             makeMove(pendingMoveRef.current);
-             pendingMoveRef.current = null;
-          }
         },
       });
       client.activate();
-
       return () => {
         wsConnected.current = false;
         client.deactivate();
@@ -99,19 +94,11 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'n' && game.gameId) {
-        dispatch(resetGame());
+      if (e.key.toLowerCase() === 'n') {
+        handleReset();
         return;
       }
-      if (e.key.toLowerCase() === 'a' && game.gameId && game.status === 'playing') {
-        handleAi();
-        return;
-      }
-      if (e.key.toLowerCase() === 'u' && game.gameId && game.status === 'playing') {
-        handleUndo();
-        return;
-      }
-
+      
       let direction: Direction | null = null;
       if (e.key === 'ArrowUp') direction = 'UP';
       else if (e.key === 'ArrowDown') direction = 'DOWN';
@@ -119,22 +106,25 @@ function App() {
       else if (e.key === 'ArrowRight') direction = 'RIGHT';
 
       if (!direction) return;
-
       e.preventDefault();
 
-      if (game.status !== 'playing' || !game.gameId) {
-        handleStartGame(direction);
+      // If game not started or in idle state, start AND move
+      if (!game.gameId || game.status === 'idle') {
+        handleStartAndMove(direction);
         return;
       }
 
-      if (!wsConnected.current) return;
+      if (game.status !== 'playing' || !game.boardState) return;
 
-      makeMove(direction);
+      // Regular move
+      makeMove(direction).then(res => {
+        if (res) dispatch(updateGameState(res));
+      });
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [game.gameId, game.status]);
+  }, [game.gameId, game.status, game.boardState]);
 
   const handleAi = () => {
     if (game.gameId) {
@@ -142,27 +132,19 @@ function App() {
     }
   };
 
-  const handleUndo = async () => {
-    if (game.gameId) {
-      const result = await undoMove();
-      if (result) {
-        dispatch(updateGameState(result));
-      }
-    }
-  };
-
   return (
     <GameContainer>
       <GameHeader 
         score={game.score} 
+        highScore={game.highScore}
         gameId={game.gameId} 
-        onReset={() => dispatch(resetGame())} 
+        onReset={handleReset} 
         onOpenSettings={() => setShowSettings(true)}
       />
 
       <BoardWrapper>
         {(game.gameOver || game.won) && <GameOverOverlay won={game.won} />}
-        {!game.gameId && <StartOverlay />}
+        {!game.boardState && <StartOverlay />}
         
         <GameGrid boardState={game.boardState} />
       </BoardWrapper>
@@ -170,8 +152,7 @@ function App() {
       <div className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest flex gap-4">
           <span>(Arrows) Move</span>
           <span>(A) AI</span>
-          <span>(U) Undo</span>
-          <span>(N) New</span>
+          <span>(N) New Game</span>
       </div>
 
       <GameControls 

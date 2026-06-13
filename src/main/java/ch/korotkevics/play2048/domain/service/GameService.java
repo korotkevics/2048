@@ -7,9 +7,7 @@ import ch.korotkevics.play2048.domain.engine.Game2048Engine;
 import ch.korotkevics.play2048.domain.engine.GameSettings;
 import ch.korotkevics.play2048.domain.engine.MoveResult;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The "Game Master" of the domain.
@@ -29,17 +27,20 @@ public final class GameService {
         this.eventStream = eventStream;
     }
 
-    public GameId startNewGame(String clientId) {
+    public MoveResult startNewGame(String clientId) {
         gameRepository.clearHistory(clientId);
-        GameSettings settings = settingsRepository.findByClientId(clientId)
-                .map(SettingsRepository.SettingsBundle::gameSettings)
-                .orElse(new GameSettings());
+        SettingsRepository.SettingsBundle settingsBundle = getSettings(clientId);
         
-        Game2048Engine engine = Game2048Engine.newGame(Game2048Engine.DEFAULT_SIZE, new java.util.Random(), settings);
+        Game2048Engine engine = Game2048Engine.newGame(Game2048Engine.DEFAULT_SIZE, new java.util.Random(), settingsBundle.gameSettings());
         gameRepository.save(clientId, engine);
         
-        eventStream.publish(new DomainEventStream.GameStarted(clientId, engine.boardState()));
-        return GameId.generate(); 
+        MoveResult result = new MoveResult(
+                null, true, 0, 0, settingsBundle.highScore(),
+                false, false, engine.boardState(), java.util.Collections.emptyList(), engine
+        );
+
+        eventStream.publish(new DomainEventStream.GameStarted(clientId, engine.boardState(), settingsBundle.highScore()));
+        return result;
     }
 
     public MoveResult makeMove(String clientId, Direction direction) {
@@ -50,6 +51,22 @@ public final class GameService {
         gameRepository.pushToHistory(clientId, engine);
 
         MoveResult result = engine.move(direction);
+        
+        SettingsRepository.SettingsBundle bundle = getSettings(clientId);
+        int currentHighScore = bundle.highScore();
+        int newHighScore = Math.max(currentHighScore, result.score());
+        
+        if (newHighScore > currentHighScore) {
+            settingsRepository.save(clientId, bundle.userSettings(), bundle.gameSettings(), newHighScore);
+        }
+
+        // Return result with actual high score
+        MoveResult finalResult = new MoveResult(
+                result.direction(), result.moved(), result.scoreGained(), result.score(),
+                newHighScore, result.gameOver(), result.won(), result.boardState(),
+                result.deltas(), result.nextEngine()
+        );
+
         if (result.moved()) {
             gameRepository.save(clientId, result.nextEngine());
         } else {
@@ -57,16 +74,18 @@ public final class GameService {
             gameRepository.popFromHistory(clientId);
         }
         
-        eventStream.publish(new DomainEventStream.MoveMade(clientId, result));
-        return result;
+        eventStream.publish(new DomainEventStream.MoveMade(clientId, finalResult));
+        return finalResult;
     }
 
     public Optional<MoveResult> undo(String clientId) {
         return gameRepository.popFromHistory(clientId).map(previousEngine -> {
             gameRepository.save(clientId, previousEngine);
             
+            int highScore = getSettings(clientId).highScore();
+            
             MoveResult result = new MoveResult(
-                    null, true, 0, previousEngine.score(),
+                    null, true, 0, previousEngine.score(), highScore,
                     previousEngine.isGameOver(), previousEngine.isWon(),
                     previousEngine.boardState(), java.util.Collections.emptyList(), previousEngine
             );
@@ -81,9 +100,7 @@ public final class GameService {
                 .orElse(null);
         if (engine == null) return;
 
-        UserSettings userSettings = settingsRepository.findByClientId(clientId)
-                .map(SettingsRepository.SettingsBundle::userSettings)
-                .orElse(new UserSettings());
+        UserSettings userSettings = getSettings(clientId).userSettings();
 
         aiFacade.suggestNextMove(engine.boardState(), userSettings)
                 .ifPresent(direction -> eventStream.publish(new DomainEventStream.AiSuggestionProduced(clientId, direction)));
@@ -99,11 +116,12 @@ public final class GameService {
 
     public SettingsRepository.SettingsBundle getSettings(String clientId) {
         return settingsRepository.findByClientId(clientId)
-                .orElseGet(() -> new SettingsRepository.SettingsBundle(new UserSettings(), new GameSettings()));
+                .orElseGet(() -> new SettingsRepository.SettingsBundle(new UserSettings(), new GameSettings(), 0));
     }
 
     public void updateSettings(String clientId, UserSettings userSettings, GameSettings gameSettings) {
-        settingsRepository.save(clientId, userSettings, gameSettings);
+        int currentHighScore = getSettings(clientId).highScore();
+        settingsRepository.save(clientId, userSettings, gameSettings, currentHighScore);
     }
 
     public void cleanupStaleGames() {
