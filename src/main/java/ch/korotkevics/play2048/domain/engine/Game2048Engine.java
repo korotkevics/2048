@@ -37,10 +37,8 @@ public final class Game2048Engine {
     }
 
     public static Game2048Engine newGame(int size, Random random, GameSettings settings) {
-        Board initialBoard = new Board(size);
-        TileSpawner spawner = new TileSpawner();
-        Board seededBoard = spawner.spawnInitialTiles(initialBoard, settings, random);
-        return new Game2048Engine(seededBoard, 0, random, settings);
+        Board emptyBoard = new Board(size);
+        return new Game2048Engine(emptyBoard, 0, random, settings);
     }
 
     public static Game2048Engine from(int[][] grid) {
@@ -56,6 +54,23 @@ public final class Game2048Engine {
     }
 
     public MoveResult move(Direction direction) {
+        // If board is completely empty, this is the very first move.
+        // It shouldn't shift anything, just spawn the initial tiles.
+        if (board.emptyCells().size() == board.size() * board.size()) {
+            Board seededBoard = tileSpawner.spawnInitialTiles(board, settings, random);
+            Game2048Engine finalEngine = new Game2048Engine(seededBoard, score, random, settings);
+            return new MoveResult(
+                    direction,
+                    true,
+                    0,
+                    score,
+                    finalEngine.isGameOver(),
+                    finalEngine.isWon(),
+                    finalEngine.boardState(),
+                    finalEngine
+            );
+        }
+
         MoveResult result = simulateMove(direction);
         if (result.moved()) {
             Board boardWithTile = tileSpawner.spawnRandomTile(result.nextEngine().board, settings, random);
