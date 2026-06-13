@@ -1,0 +1,113 @@
+{
+  "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+  "name": "Game 2048 Engine",
+  "scenarios": [
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "tiles_are_merged_correctly",
+      "description": "tiles are merged correctly",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 2732500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is made",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is made"
+                },
+                {
+                  "value": "LEFT",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "LEFT"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 233833,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the board has moved",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the board has moved"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 17072916,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the score gained is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the score gained is"
+                },
+                {
+                  "value": "4",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "4"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 1069792,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 28357166
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 28357166
+    }
+  ],
+  "tagMap": {}
+}

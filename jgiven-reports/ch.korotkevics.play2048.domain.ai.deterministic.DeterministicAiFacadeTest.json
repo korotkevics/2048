@@ -1,0 +1,158 @@
+{
+  "className": "ch.korotkevics.play2048.domain.ai.deterministic.DeterministicAiFacadeTest",
+  "name": "Deterministic Ai Facade",
+  "scenarios": [
+    {
+      "className": "ch.korotkevics.play2048.domain.ai.deterministic.DeterministicAiFacadeTest",
+      "testMethodName": "deterministic_ai_suggests_a_valid_move",
+      "description": "deterministic ai suggests a valid move",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a deterministic ai",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a deterministic ai"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 23166,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a board with grid",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a board with grid"
+                },
+                {
+                  "value": "2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 303666,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the ai is asked for a move",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the ai is asked for a move"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 86375,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a suggestion is made",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a suggestion is made"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 23625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the suggested direction is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the suggested direction is"
+                },
+                {
+                  "value": "LEFT",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "LEFT"
+                  }
+                }
+              ],
+              "status": "FAILED",
+              "durationInNanos": 5520709,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "FAILED",
+          "errorMessage": "org.opentest4j.AssertionFailedError: \nExpecting actual:\n  Optional[UP]\nto contain:\n  LEFT\nbut did not.",
+          "stackTrace": [
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi.the_suggested_direction_is(ThenAi.java:27)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$Nm6e0jB5.the_suggested_direction_is$accessor$HViHAG8t(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$Nm6e0jB5$auxiliary$gF7o5zXn.call(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$Nm6e0jB5.the_suggested_direction_is(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.deterministic.DeterministicAiFacadeTest.deterministic_ai_suggests_a_valid_move(DeterministicAiFacadeTest.java:25)",
+            "java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)",
+            "org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)",
+            "org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)",
+            "org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)",
+            "org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)",
+            "org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)",
+            "org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)",
+            "org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)",
+            "org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)",
+            "java.base/java.util.ArrayList.forEach(ArrayList.java:1604)",
+            "org.testng.TestRunner.privateRun(TestRunner.java:739)",
+            "org.testng.TestRunner.run(TestRunner.java:614)",
+            "org.testng.SuiteRunner.runTest(SuiteRunner.java:421)",
+            "org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)",
+            "org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)",
+            "org.testng.SuiteRunner.run(SuiteRunner.java:312)",
+            "org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)",
+            "org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)",
+            "org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)",
+            "org.testng.TestNG.runSuitesLocally(TestNG.java:1208)",
+            "org.testng.TestNG.runSuites(TestNG.java:1112)",
+            "org.testng.TestNG.run(TestNG.java:1079)",
+            "org.pitest.testng.TestNGTestUnit.executeInCurrentLoader(TestNGTestUnit.java:90)",
+            "org.pitest.testng.TestNGTestUnit.execute(TestNGTestUnit.java:73)",
+            "org.pitest.mutationtest.execute.MutationTimeoutDecorator.lambda$createRunnable$0(MutationTimeoutDecorator.java:81)",
+            "java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)",
+            "java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)",
+            "java.base/java.lang.Thread.run(Thread.java:1447)"
+          ],
+          "durationInNanos": 6945417
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 6945417
+    }
+  ],
+  "tagMap": {}
+}

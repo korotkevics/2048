@@ -1,0 +1,165 @@
+{
+  "className": "ch.korotkevics.play2048.domain.ai.AiFacadeTest",
+  "name": "Ai Facade",
+  "scenarios": [
+    {
+      "className": "ch.korotkevics.play2048.domain.ai.AiFacadeTest",
+      "testMethodName": "ai_facade_switches_strategies_based_on_settings",
+      "description": "ai facade switches strategies based on settings",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "an ai facade with deterministic and llm strategies",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an ai facade with deterministic and llm strategies"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 615000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a board with grid",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a board with grid"
+                },
+                {
+                  "value": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 277917,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the active strategy is set to",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the active strategy is set to"
+                },
+                {
+                  "value": "DETERMINISTIC",
+                  "argumentInfo": {
+                    "argumentName": "type",
+                    "formattedValue": "DETERMINISTIC"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 110250,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the ai is asked for a move",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the ai is asked for a move"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4110667,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the suggested direction is",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the suggested direction is"
+                },
+                {
+                  "value": "UP",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "UP"
+                  }
+                }
+              ],
+              "status": "FAILED",
+              "durationInNanos": 343250,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "FAILED",
+          "errorMessage": "java.lang.AssertionError: \nExpecting Optional to contain:\n  UP\nbut was empty.",
+          "stackTrace": [
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi.the_suggested_direction_is(ThenAi.java:27)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$gYRdbOFH.the_suggested_direction_is$accessor$uWZaBFgp(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$gYRdbOFH$auxiliary$YrmNDyIS.call(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$gYRdbOFH.the_suggested_direction_is(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.AiFacadeTest.ai_facade_switches_strategies_based_on_settings(AiFacadeTest.java:27)",
+            "java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)",
+            "org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)",
+            "org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)",
+            "org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)",
+            "org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)",
+            "org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)",
+            "org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)",
+            "org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)",
+            "org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)",
+            "java.base/java.util.ArrayList.forEach(ArrayList.java:1604)",
+            "org.testng.TestRunner.privateRun(TestRunner.java:739)",
+            "org.testng.TestRunner.run(TestRunner.java:614)",
+            "org.testng.SuiteRunner.runTest(SuiteRunner.java:421)",
+            "org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)",
+            "org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)",
+            "org.testng.SuiteRunner.run(SuiteRunner.java:312)",
+            "org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)",
+            "org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)",
+            "org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)",
+            "org.testng.TestNG.runSuitesLocally(TestNG.java:1208)",
+            "org.testng.TestNG.runSuites(TestNG.java:1112)",
+            "org.testng.TestNG.run(TestNG.java:1079)",
+            "org.pitest.testng.TestNGTestUnit.executeInCurrentLoader(TestNGTestUnit.java:90)",
+            "org.pitest.testng.TestNGTestUnit.execute(TestNGTestUnit.java:73)",
+            "org.pitest.mutationtest.execute.MutationTimeoutDecorator.lambda$createRunnable$0(MutationTimeoutDecorator.java:81)",
+            "java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)",
+            "java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)",
+            "java.base/java.lang.Thread.run(Thread.java:1447)"
+          ],
+          "durationInNanos": 6171916
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 6171916
+    }
+  ],
+  "tagMap": {}
+}
