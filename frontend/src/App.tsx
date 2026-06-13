@@ -83,33 +83,44 @@ function App() {
     }
   }, [game.gameId, dispatch]);
 
+  const isStarting = useRef(false);
+
+  const handleStartGame = async () => {
+    if (isStarting.current) return;
+    isStarting.current = true;
+    try {
+      const id = await startNewGame();
+      dispatch(setGameId(id));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isStarting.current = false;
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (game.status !== 'playing' || !game.gameId) return;
-
       let direction: Direction | null = null;
       if (e.key === 'ArrowUp') direction = 'UP';
       else if (e.key === 'ArrowDown') direction = 'DOWN';
       else if (e.key === 'ArrowLeft') direction = 'LEFT';
       else if (e.key === 'ArrowRight') direction = 'RIGHT';
 
-      if (direction) {
-        makeMove(game.gameId, direction);
+      if (!direction) return;
+
+      e.preventDefault(); // Prevent scrolling
+
+      if (game.status !== 'playing' || !game.gameId) {
+        handleStartGame();
+        return;
       }
+
+      makeMove(game.gameId, direction);
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [game.gameId, game.status]);
-
-  const handleStartGame = async () => {
-    try {
-      const id = await startNewGame();
-      dispatch(setGameId(id));
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   const handleAi = () => {
     if (game.gameId) {
@@ -137,24 +148,15 @@ function App() {
             <div className="text-2xl font-bold">{game.score}</div>
           </div>
         </div>
-        <button 
-          onClick={handleStartGame}
-          className="bg-[#00509a] text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-[#003d7a] transition-colors focus:ring-2 focus:ring-[#00509a] focus:ring-offset-2 focus:ring-offset-slate-50"
-        >
-          New Game
-        </button>
       </div>
 
       <div className="bg-[#002244] p-4 rounded-xl shadow-2xl relative">
-        {(game.gameOver || game.won) && (
+        {(game.gameOver || game.won || !game.gameId) && (
           <div className="absolute inset-0 bg-slate-50/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
-            <h2 className="text-4xl font-extrabold mb-6 text-[#002244]">{game.won ? "You Win!" : "Game Over!"}</h2>
-            <button 
-              onClick={handleStartGame}
-              className="bg-[#00509a] text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-[#003d7a] transition-colors"
-            >
-              Try Again
-            </button>
+            {game.gameId && (
+              <h2 className="text-4xl font-extrabold mb-2 text-[#002244]">{game.won ? "You Win!" : "Game Over!"}</h2>
+            )}
+            <p className="text-[#00509a] font-bold text-xl mt-4 animate-pulse">Press any Arrow Key to start</p>
           </div>
         )}
         
