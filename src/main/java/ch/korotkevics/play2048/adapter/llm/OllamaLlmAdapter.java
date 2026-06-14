@@ -46,20 +46,24 @@ public final class OllamaLlmAdapter implements LlmClient {
                     "model", model,
                     "prompt", prompt,
                     "stream", false,
-                    "options", Map.of("temperature", 0.0)
+                    "options", Map.of(
+                            "temperature", 0.0,
+                            "num_predict", 10,  // Stop after a few tokens (we only need one word)
+                            "top_k", 20,
+                            "top_p", 0.9
+                    )
             );
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/api/generate"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(requestBody)))
-                    .timeout(Duration.ofSeconds(30))
+                    .timeout(Duration.ofSeconds(10)) // Aggressive timeout
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                System.err.println("Ollama API error: " + response.statusCode() + " - " + response.body());
                 return Optional.empty();
             }
 
@@ -68,20 +72,14 @@ public final class OllamaLlmAdapter implements LlmClient {
 
             return parseDirection(textResponse);
         } catch (Exception e) {
-            System.err.println("Failed to communicate with Ollama: " + e.getMessage());
             return Optional.empty();
         }
     }
 
     private String constructPrompt(BoardState boardState) {
-        return """
-                You are playing 2048.
-                Current board state:
-                %s
-                
-                Suggest the next move. Respond ONLY with one of the following words: UP, RIGHT, DOWN, LEFT.
-                Do not provide any explanation.
-                """.formatted(Arrays.deepToString(boardState.grid()));
+        // Drastically simplified prompt to reduce processing time
+        return "2048 Game. Board: %s. Next move (UP, RIGHT, DOWN, LEFT)? Respond with ONE WORD ONLY."
+                .formatted(Arrays.deepToString(boardState.grid()));
     }
 
     private Optional<Direction> parseDirection(String text) {

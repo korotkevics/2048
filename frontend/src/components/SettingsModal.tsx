@@ -109,6 +109,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             value={settings.initialTileCount} 
             onChange={(e) => handleChangeInitialCount(Number(e.target.value))}
           >
+            <option value={0}>Random (2-6)</option>
             <option value={2}>2</option>
             <option value={4}>4</option>
             <option value={6}>6</option>

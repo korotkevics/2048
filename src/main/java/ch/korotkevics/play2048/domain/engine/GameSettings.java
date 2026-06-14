@@ -9,7 +9,7 @@ public final class GameSettings {
 
     public GameSettings() {
         this.spawnConfiguration = new TileSpawnConfiguration();
-        this.initialTileCount = 4;
+        this.initialTileCount = 0; // 0 means Random
     }
 
     public TileSpawnConfiguration getSpawnConfiguration() {
@@ -21,8 +21,8 @@ public final class GameSettings {
     }
 
     public synchronized void setInitialTileCount(int initialTileCount) {
-        if (initialTileCount < 1) {
-            throw new IllegalArgumentException("initialTileCount must be at least 1");
+        if (initialTileCount != 0 && initialTileCount < 1) {
+            throw new IllegalArgumentException("initialTileCount must be 0 (Random) or at least 1");
         }
         this.initialTileCount = initialTileCount;
     }

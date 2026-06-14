@@ -9,6 +9,7 @@ import ch.korotkevics.play2048.domain.engine.MoveResult;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +25,12 @@ public final class GameService {
     private final SettingsRepository settingsRepository;
     private final MoveSuggester aiFacade;
     private final DomainEventStream eventStream;
+    
+    // Tracks active auto-play threads by client ID
     private final Map<String, Future<?>> activeAutoPlays = new ConcurrentHashMap<>();
+    // Tracks a unique token for each auto-play session to prevent "ghost" threads
+    private final Map<String, String> activeAutoPlayTokens = new ConcurrentHashMap<>();
+    
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     public GameService(GameRepository gameRepository, SettingsRepository settingsRepository, MoveSuggester aiFacade, DomainEventStream eventStream) {
@@ -55,7 +61,6 @@ public final class GameService {
         Game2048Engine engine = gameRepository.findByClientId(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("No active game for client: " + clientId));
 
-        // Push current state to history before making move
         gameRepository.pushToHistory(clientId, engine);
 
         MoveResult result = engine.move(direction);
@@ -68,7 +73,6 @@ public final class GameService {
             settingsRepository.save(clientId, bundle.userSettings(), bundle.gameSettings(), newHighScore);
         }
 
-        // Return result with actual high score
         MoveResult finalResult = new MoveResult(
                 result.direction(), result.moved(), result.scoreGained(), result.score(),
                 newHighScore, result.gameOver(), result.won(), result.boardState(),
@@ -78,7 +82,6 @@ public final class GameService {
         if (result.moved()) {
             gameRepository.save(clientId, result.nextEngine());
         } else {
-            // If move didn't happen, remove from history to keep it clean
             gameRepository.popFromHistory(clientId);
         }
         
@@ -140,9 +143,17 @@ public final class GameService {
     public void startAutoPlay(String clientId) {
         stopAutoPlay(clientId); 
 
+        String sessionToken = UUID.randomUUID().toString();
+        activeAutoPlayTokens.put(clientId, sessionToken);
+
         Future<?> future = executor.submit(() -> {
             try {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    // Check if this thread is still the active one for this client
+                    if (!sessionToken.equals(activeAutoPlayTokens.get(clientId))) {
+                        break;
+                    }
+
                     Game2048Engine engine = gameRepository.findByClientId(clientId).orElse(null);
                     if (engine == null || engine.isGameOver() || engine.isWon()) {
                         break;
@@ -153,7 +164,11 @@ public final class GameService {
 
                     if (suggestion.isPresent()) {
                         makeMove(clientId, suggestion.get());
-                        Thread.sleep(300); 
+                        
+                        // Deterministic is too fast, but LLM is slow enough
+                        if (userSettings.getAiType() == UserSettings.AiType.DETERMINISTIC) {
+                            Thread.sleep(300); 
+                        }
                     } else {
                         break; 
                     }
@@ -161,6 +176,7 @@ public final class GameService {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } finally {
+                activeAutoPlayTokens.remove(clientId, sessionToken);
                 activeAutoPlays.remove(clientId);
             }
         });
@@ -169,6 +185,7 @@ public final class GameService {
     }
 
     public void stopAutoPlay(String clientId) {
+        activeAutoPlayTokens.remove(clientId);
         Future<?> future = activeAutoPlays.remove(clientId);
         if (future != null) {
             future.cancel(true);

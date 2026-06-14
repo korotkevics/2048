@@ -8,7 +8,12 @@ final class TileSpawner {
 
     Board spawnInitialTiles(Board board, GameSettings settings, Random random) {
         Board current = board;
-        for (int i = 0; i < settings.getInitialTileCount(); i++) {
+        int count = settings.getInitialTileCount();
+        if (count == 0) {
+            // "Random number of 2s" - picked a range of 2 to 6 as reasonable for 4x4
+            count = 2 + random.nextInt(5); 
+        }
+        for (int i = 0; i < count; i++) {
             current = spawnTile(current, 2, random);
         }
         return current;
