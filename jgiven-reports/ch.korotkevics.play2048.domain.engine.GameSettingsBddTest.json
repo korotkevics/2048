@@ -25,7 +25,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 42166,
+              "durationInNanos": 123625,
               "depth": 0,
               "parentFailed": false
             },
@@ -48,7 +48,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 242667,
+              "durationInNanos": 647000,
               "depth": 0,
               "parentFailed": false
             },
@@ -78,7 +78,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 132500,
+              "durationInNanos": 3407292,
               "depth": 0,
               "parentFailed": false
             },
@@ -108,7 +108,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 106334,
+              "durationInNanos": 457584,
               "depth": 0,
               "parentFailed": false
             }
@@ -116,11 +116,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 905459
+          "durationInNanos": 6184583
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 905459
+      "durationInNanos": 6184583
     },
     {
       "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
@@ -145,7 +145,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 18792,
+              "durationInNanos": 60708,
               "depth": 0,
               "parentFailed": false
             },
@@ -168,7 +168,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 100417,
+              "durationInNanos": 229042,
               "depth": 0,
               "parentFailed": false
             },
@@ -191,7 +191,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 87667,
+              "durationInNanos": 119084,
               "depth": 0,
               "parentFailed": false
             }
@@ -199,11 +199,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 433708
+          "durationInNanos": 1210000
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 433708
+      "durationInNanos": 1210000
     },
     {
       "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
@@ -228,7 +228,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 20792,
+              "durationInNanos": 22208,
               "depth": 0,
               "parentFailed": false
             },
@@ -251,7 +251,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 83791,
+              "durationInNanos": 131500,
               "depth": 0,
               "parentFailed": false
             },
@@ -266,56 +266,633 @@
                   "value": "an illegal argument exception is thrown"
                 }
               ],
-              "status": "FAILED",
-              "durationInNanos": 540500,
+              "status": "PASSED",
+              "durationInNanos": 2391417,
               "depth": 0,
               "parentFailed": false
             }
           ],
           "explicitArguments": [],
           "derivedArguments": [],
-          "status": "FAILED",
-          "errorMessage": "java.lang.AssertionError: \nExpecting actual not to be null",
-          "stackTrace": [
-            "ch.korotkevics.play2048.domain.engine.stages.ThenSettings.an_illegal_argument_exception_is_thrown(ThenSettings.java:33)",
-            "ch.korotkevics.play2048.domain.engine.stages.ThenSettings$ByteBuddy$IR0V6NXG.an_illegal_argument_exception_is_thrown$accessor$Y32J7OdK(Unknown Source)",
-            "ch.korotkevics.play2048.domain.engine.stages.ThenSettings$ByteBuddy$IR0V6NXG$auxiliary$97ndFPo7.call(Unknown Source)",
-            "ch.korotkevics.play2048.domain.engine.stages.ThenSettings$ByteBuddy$IR0V6NXG.an_illegal_argument_exception_is_thrown(Unknown Source)",
-            "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest.invalid_initial_tile_count_throws_exception(GameSettingsBddTest.java:30)",
-            "java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)",
-            "org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)",
-            "org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)",
-            "org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)",
-            "org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)",
-            "org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)",
-            "org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)",
-            "org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)",
-            "org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)",
-            "java.base/java.util.ArrayList.forEach(ArrayList.java:1604)",
-            "org.testng.TestRunner.privateRun(TestRunner.java:739)",
-            "org.testng.TestRunner.run(TestRunner.java:614)",
-            "org.testng.SuiteRunner.runTest(SuiteRunner.java:421)",
-            "org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)",
-            "org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)",
-            "org.testng.SuiteRunner.run(SuiteRunner.java:312)",
-            "org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)",
-            "org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)",
-            "org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)",
-            "org.testng.TestNG.runSuitesLocally(TestNG.java:1208)",
-            "org.testng.TestNG.runSuites(TestNG.java:1112)",
-            "org.testng.TestNG.run(TestNG.java:1079)",
-            "org.pitest.testng.TestNGTestUnit.executeInCurrentLoader(TestNGTestUnit.java:90)",
-            "org.pitest.testng.TestNGTestUnit.execute(TestNGTestUnit.java:73)",
-            "org.pitest.mutationtest.execute.MutationTimeoutDecorator.lambda$createRunnable$0(MutationTimeoutDecorator.java:81)",
-            "java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)",
-            "java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)",
-            "java.base/java.lang.Thread.run(Thread.java:1447)"
-          ],
-          "durationInNanos": 1106625
+          "status": "SUCCESS",
+          "durationInNanos": 2983708
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 1106625
+      "durationInNanos": 2983708
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "invalid_probability_sum_fails_validation",
+      "description": "invalid probability sum fails validation",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 32917,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn probability is updated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn probability is updated"
+                },
+                {
+                  "value": "2",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "2"
+                  }
+                },
+                {
+                  "value": "0.5",
+                  "argumentInfo": {
+                    "argumentName": "probability",
+                    "formattedValue": "0.5"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 183000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the configuration is validated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the configuration is validated"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 5511708,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an illegal state exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an illegal state exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 62291,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 6473250
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 6473250
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "invalid_spawn_probabilities_throw_exception",
+      "description": "invalid spawn probabilities throw exception",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 33459,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn probability is updated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn probability is updated"
+                },
+                {
+                  "value": "2",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "2"
+                  }
+                },
+                {
+                  "value": "1.1",
+                  "argumentInfo": {
+                    "argumentName": "probability",
+                    "formattedValue": "1.1"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 236625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an illegal argument exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an illegal argument exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 31458,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 718250
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 718250
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "invalid_spawn_values_throw_exception",
+      "description": "invalid spawn values throw exception",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 22250,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn probability is updated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn probability is updated"
+                },
+                {
+                  "value": "3",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "3"
+                  }
+                },
+                {
+                  "value": "0.5",
+                  "argumentInfo": {
+                    "argumentName": "probability",
+                    "formattedValue": "0.5"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 147834,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an illegal argument exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an illegal argument exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 26000,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 493875
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 493875
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "removing_last_spawn_value_throws_exception",
+      "description": "removing last spawn value throws exception",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 24125,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn value is removed",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn value is removed"
+                },
+                {
+                  "value": "4",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "4"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 136917,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn value is removed",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn value is removed"
+                },
+                {
+                  "value": "2",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "2"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 544125,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an illegal state exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an illegal state exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 101792,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 1709500
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 1709500
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "spawn_probabilities_can_be_updated",
+      "description": "spawn probabilities can be updated",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 34166,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn probability is updated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn probability is updated"
+                },
+                {
+                  "value": "8",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "8"
+                  }
+                },
+                {
+                  "value": "0.5",
+                  "argumentInfo": {
+                    "argumentName": "probability",
+                    "formattedValue": "0.5"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 244208,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the spawn probability for value is",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the spawn probability for value is"
+                },
+                {
+                  "value": "8",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "8"
+                  }
+                },
+                {
+                  "value": "0.5",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "0.5"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 278750,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 1003375
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 1003375
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "spawn_values_can_be_removed",
+      "description": "spawn values can be removed",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 32583,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a spawn value is removed",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a spawn value is removed"
+                },
+                {
+                  "value": "4",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "4"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 172917,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the spawn configuration does not contain",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the spawn configuration does not contain"
+                },
+                {
+                  "value": "4",
+                  "argumentInfo": {
+                    "argumentName": "value",
+                    "formattedValue": "4"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 4832750,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 5483583
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 5483583
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.GameSettingsBddTest",
+      "testMethodName": "valid_configuration_passes_validation",
+      "description": "valid configuration passes validation",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "default settings",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "default settings"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 28791,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the configuration is validated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the configuration is validated"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 33792,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "no exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "no exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 130667,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 840916
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 840916
     }
   ],
   "tagMap": {}

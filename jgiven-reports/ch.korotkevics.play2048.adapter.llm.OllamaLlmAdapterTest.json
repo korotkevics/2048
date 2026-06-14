@@ -1,0 +1,27 @@
+{
+  "className": "ch.korotkevics.play2048.adapter.llm.OllamaLlmAdapterTest",
+  "name": "Ollama Llm Adapter",
+  "scenarios": [
+    {
+      "className": "ch.korotkevics.play2048.adapter.llm.OllamaLlmAdapterTest",
+      "testMethodName": "adapterHandlesMissingConnectionGracefully",
+      "description": "Adapter handles missing connection gracefully",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 384656375
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 384656375
+    }
+  ],
+  "tagMap": {}
+}

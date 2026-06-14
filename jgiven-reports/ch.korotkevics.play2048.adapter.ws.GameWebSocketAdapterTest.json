@@ -1,0 +1,67 @@
+{
+  "className": "ch.korotkevics.play2048.adapter.ws.GameWebSocketAdapterTest",
+  "name": "Game Web Socket Adapter",
+  "scenarios": [
+    {
+      "className": "ch.korotkevics.play2048.adapter.ws.GameWebSocketAdapterTest",
+      "testMethodName": "handlesAiSuggestionEvent",
+      "description": "Handles ai suggestion event",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 6887958
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 6887958
+    },
+    {
+      "className": "ch.korotkevics.play2048.adapter.ws.GameWebSocketAdapterTest",
+      "testMethodName": "handlesGameStartedEvent",
+      "description": "Handles game started event",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 4741875
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 4741875
+    },
+    {
+      "className": "ch.korotkevics.play2048.adapter.ws.GameWebSocketAdapterTest",
+      "testMethodName": "handlesMoveMadeEvent",
+      "description": "Handles move made event",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 25379166
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 25379166
+    }
+  ],
+  "tagMap": {}
+}

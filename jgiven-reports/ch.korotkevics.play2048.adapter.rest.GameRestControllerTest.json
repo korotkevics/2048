@@ -1,0 +1,67 @@
+{
+  "className": "ch.korotkevics.play2048.adapter.rest.GameRestControllerTest",
+  "name": "Game Rest Controller",
+  "scenarios": [
+    {
+      "className": "ch.korotkevics.play2048.adapter.rest.GameRestControllerTest",
+      "testMethodName": "makeMoveDelegatesToService",
+      "description": "Make move delegates to service",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 129392625
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 129392625
+    },
+    {
+      "className": "ch.korotkevics.play2048.adapter.rest.GameRestControllerTest",
+      "testMethodName": "requestAiSuggestionDelegatesToService",
+      "description": "Request ai suggestion delegates to service",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 774375
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 774375
+    },
+    {
+      "className": "ch.korotkevics.play2048.adapter.rest.GameRestControllerTest",
+      "testMethodName": "startNewGameDelegatesToService",
+      "description": "Start new game delegates to service",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 7233083
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 7233083
+    }
+  ],
+  "tagMap": {}
+}
