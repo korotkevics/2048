@@ -8,22 +8,33 @@ To build and run the entire application stack execute `docker compose up --build
 
 ## Back-end
 
-- **Architecture:** Strict Hexagonal Architecture. The `domain` package is dependency-free and isolated from framework-specific code.
-- **Concurrency:** Auto-play runs in isolated virtual threads, managed via UUID-based session tokens to prevent orphaned execution.
-- **Messaging:** Asynchronous state updates and AI suggestions are pushed via WebSocket (STOMP) through a `DomainEventStream`.
-- **Quality:** High-level facades are verified using JGiven BDD scenarios, achieving >85% domain line coverage.
-- **AI Engines:**
-    - **Algo-based:** Depth-6 Expectimax with parallel root evaluation and Gradient weight heuristics.
-    - **LLM-based:** Prompt-engineered `qwen2.5:1.5b` via Ollama, augmented with backend-calculated strategy scores.
+The back-end code is kept under `./src`. 
+
+The package `ch.korotkevics.play2048.domain` is purposefully kept dependency free, it represents the core logic.
+
+Each significant piece of logic is exposed via a facade, and facades are tested in BDD fashion with JGiven (reaching >85% domain line coverage).
+
+Communication with the domain happens via the `ch.korotkevics.play2048.domain.service.DomainEventStream`.
+
+Persistence happens via repositories.
 
 ## Front-end
 
-- **State Management:** React with Redux Toolkit and TypeScript for type-safe state transitions.
-- **Communication:** Bi-directional communication using REST for configuration and WebSocket for real-time game state synchronization.
-- **UX:** Responsive CSS Grid layout with support for keyboard shortcuts (Arrows, Undo, AI Suggest, Auto-Play).
+The web client communicates with the server via WebSocket and REST.
 
-## Implementation Remarks
+The web client is implemented using React Redux / TypeScript.
 
-- **Persistence:** PostgreSQL is utilized for high scores and game history, ensuring state survives refreshes or container restarts.
-- **Customization:** Dynamic `GameSettings` (tile values, spawn probabilities) are fully supported by both the game engine and AI strategies.
-- **Development:** Built using Gemini CLI in an interactive, automated loop, focusing on surgical refactors and rigorous verification.
+All significant components are decomposed.
+
+## Further Remarks
+
+In no particular order,
+
+- Realistically, the app doesn't require a proper back-end, but probably a front-end only app would miss the point
+- Minor necessary deviations from the standard 2048 game are made default but configurable via `Settings`
+- The `Revert` feature wasn't requested but the example had it, I did a variant of it, same goes for `Best Score`
+- I wasn't sure what sort of AI was meant to be implemented, therefore I did two - an algo based one (Expectimax), and an LLM based one (Qwen2.5): the first is capable of winning and is fast, the latter is rather incapable of winning and is slow.
+- I wanted to test the AI therefore I let myself introduce the `Auto-Play` feature for pure convenience
+- I also introduced hotkeys for a few things for faster interaction
+- Persistence: it's normally unnecessary to have this for this kind of a game, as much as the back-end overall, it's just for completeness
+- The app is obviously created using LLM (Gemini CLI) but under my strict guidance ;)
