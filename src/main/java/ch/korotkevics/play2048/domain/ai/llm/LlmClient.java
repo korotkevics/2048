@@ -2,9 +2,10 @@ package ch.korotkevics.play2048.domain.ai.llm;
 
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 
 import java.util.Optional;
 
 public interface LlmClient {
-    Optional<Direction> askForMove(BoardState boardState);
+    Optional<Direction> askForMove(BoardState boardState, GameSettings settings);
 }

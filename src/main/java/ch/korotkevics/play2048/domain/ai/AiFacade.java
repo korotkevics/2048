@@ -16,7 +16,7 @@ public final class AiFacade implements MoveSuggester {
     }
 
     @Override
-    public Optional<Direction> suggestNextMove(BoardState boardState, UserSettings settings) {
+    public Optional<Direction> suggestNextMove(BoardState boardState, UserSettings settings, ch.korotkevics.play2048.domain.engine.GameSettings gameSettings) {
         UserSettings.AiType currentType = settings.getAiType();
         MoveSuggester suggester = suggesters.get(currentType);
         
@@ -24,6 +24,6 @@ public final class AiFacade implements MoveSuggester {
             return Optional.empty();
         }
         
-        return suggester.suggestNextMove(boardState, settings);
+        return suggester.suggestNextMove(boardState, settings, gameSettings);
     }
 }

@@ -5,83 +5,85 @@ import ch.korotkevics.play2048.domain.ai.UserSettings;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import ch.korotkevics.play2048.domain.engine.Game2048Engine;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import ch.korotkevics.play2048.domain.engine.MoveResult;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * Standard Expectimax AI for 2048.
- * Evaluates moves by considering the weighted average of random tile spawns.
- * Uses heuristics: Monotonicity, Smoothness, Free Tiles, and Corner Weighting.
+ * Professional Expectimax AI for 2048.
+ * Optimized for depth search with high-precision heuristics and dynamic settings.
  */
 public final class DeterministicAiFacade implements MoveSuggester {
 
-    private static final int SEARCH_DEPTH = 3;
+    private static final int SEARCH_DEPTH = 6;
+    
+    private static final double[][] WEIGHT_MATRIX = {
+        {2048, 1024, 512, 256},
+        {16,   32,   64,  128},
+        {8,    4,    2,   1},
+        {0.5,  0.25, 0.1, 0.05}
+    };
 
     @Override
-    public Optional<Direction> suggestNextMove(BoardState boardState, UserSettings settings) {
+    public Optional<Direction> suggestNextMove(BoardState boardState, UserSettings settings, GameSettings gameSettings) {
         return Stream.of(Direction.values())
-                .map(direction -> evaluateRootMove(boardState, direction))
+                .parallel()
+                .map(direction -> evaluateRootMove(boardState, direction, gameSettings))
                 .filter(MoveEvaluation::moved)
                 .max(Comparator.comparingDouble(MoveEvaluation::score))
                 .map(MoveEvaluation::direction);
     }
 
-    private MoveEvaluation evaluateRootMove(BoardState state, Direction direction) {
-        Game2048Engine engine = Game2048Engine.from(state.grid());
+    private MoveEvaluation evaluateRootMove(BoardState state, Direction direction, GameSettings settings) {
+        Game2048Engine engine = Game2048Engine.from(state.grid(), 0, new java.util.Random(), settings);
         MoveResult result = engine.simulateMove(direction);
 
         if (!result.moved()) {
             return new MoveEvaluation(direction, false, 0);
         }
 
-        // We use Expectimax to find the value of this move
-        double score = expectimax(result.boardState(), SEARCH_DEPTH, false);
+        double score = expectimax(result.boardState().grid(), SEARCH_DEPTH - 1, false, settings);
         return new MoveEvaluation(direction, true, score);
     }
 
-    /**
-     * Expectimax algorithm: 
-     * - On Player turn: Maximize the score of the best move.
-     * - On Chance turn: Calculate the weighted average of all possible tile spawns (2s and 4s).
-     */
-    private double expectimax(BoardState board, int depth, boolean isPlayerTurn) {
+    private double expectimax(int[][] grid, int depth, boolean isPlayerTurn, GameSettings settings) {
         if (depth == 0) {
-            return heuristicScore(board);
+            return calculateHeuristic(grid);
         }
 
         if (isPlayerTurn) {
-            double maxScore = 0;
-            boolean canMove = false;
+            double maxScore = -1e9;
+            boolean moved = false;
             for (Direction dir : Direction.values()) {
-                Game2048Engine sim = Game2048Engine.from(board.grid());
-                MoveResult res = sim.simulateMove(dir);
-                if (res.moved()) {
-                    canMove = true;
-                    maxScore = Math.max(maxScore, expectimax(res.boardState(), depth - 1, false));
+                int[][] nextGrid = simulateMoveFast(grid, dir);
+                if (nextGrid != null) {
+                    moved = true;
+                    maxScore = Math.max(maxScore, expectimax(nextGrid, depth - 1, false, settings));
                 }
             }
-            return canMove ? maxScore : 0; // If no moves, score is 0 (death)
+            return moved ? maxScore : -1e6;
         } else {
-            // Chance turn: Average of all possible spawns
             double totalScore = 0;
             int emptyCells = 0;
-            int size = board.size();
-
-            for (int r = 0; r < size; r++) {
-                for (int c = 0; c < size; c++) {
-                    if (board.getValue(r, c) == 0) {
+            int[][] currentGrid = copyGrid(grid);
+            Map<Integer, Double> probabilities = settings.getSpawnConfiguration().getProbabilities();
+            
+            for (int r = 0; r < 4; r++) {
+                for (int c = 0; c < 4; c++) {
+                    if (currentGrid[r][c] == 0) {
                         emptyCells++;
                         
-                        // Spawn a 2 (90% chance)
-                        BoardState boardWith2 = board.withTile(r, c, 2);
-                        totalScore += 0.9 * expectimax(boardWith2, depth - 1, true);
-
-                        // Spawn a 4 (10% chance)
-                        BoardState boardWith4 = board.withTile(r, c, 4);
-                        totalScore += 0.1 * expectimax(boardWith4, depth - 1, true);
+                        // Dynamic Weighted average based on settings
+                        for (Map.Entry<Integer, Double> entry : probabilities.entrySet()) {
+                            currentGrid[r][c] = entry.getKey();
+                            totalScore += entry.getValue() * expectimax(currentGrid, depth - 1, true, settings);
+                        }
+                        
+                        currentGrid[r][c] = 0; // Backtrack
                     }
                 }
             }
@@ -89,107 +91,100 @@ public final class DeterministicAiFacade implements MoveSuggester {
         }
     }
 
-    /**
-     * The Brain: Evaluates how "good" a board is.
-     */
-    private double heuristicScore(BoardState board) {
-        return cornerWeight(board) 
-             + (monotonicity(board) * 2.0) 
-             + (smoothness(board) * 0.5) 
-             + (Math.log(countEmpty(board) + 1) * 100);
-    }
-
-    private double cornerWeight(BoardState board) {
+    private double calculateHeuristic(int[][] grid) {
         double score = 0;
-        int size = board.size();
-        for (int r = 0; r < size; r++) {
-            for (int c = 0; c < size; c++) {
-                int val = board.getValue(r, c);
-                if (val > 0) {
-                    // Log-based weight to keep big numbers in the top-left
-                    score += (Math.log(val) / Math.log(2)) * weight(r, c, size);
+        double penalty = 0;
+        int emptyCount = 0;
+
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                int val = grid[r][c];
+                if (val == 0) {
+                    emptyCount++;
+                    continue;
+                }
+                
+                double valLog = Math.log(val) / Math.log(2);
+                score += valLog * WEIGHT_MATRIX[r][c];
+
+                if (c + 1 < 4 && grid[r][c+1] != 0) {
+                    penalty += Math.abs(valLog - (Math.log(grid[r][c+1]) / Math.log(2)));
+                }
+                if (r + 1 < 4 && grid[r+1][c] != 0) {
+                    penalty += Math.abs(valLog - (Math.log(grid[r+1][c]) / Math.log(2)));
                 }
             }
         }
-        return score;
+
+        return score - (penalty * 10.0) + (Math.pow(emptyCount, 2) * 50);
     }
 
-    /**
-     * Penalizes boards where adjacent tiles have high value differences.
-     */
-    private double smoothness(BoardState board) {
-        double smoothness = 0;
-        int size = board.size();
-        for (int r = 0; r < size; r++) {
-            for (int c = 0; c < size; c++) {
-                int val = board.getValue(r, c);
-                if (val != 0) {
-                    double valLog = Math.log(val) / Math.log(2);
-                    // Check right
-                    if (c + 1 < size && board.getValue(r, c + 1) != 0) {
-                        smoothness -= Math.abs(valLog - (Math.log(board.getValue(r, c + 1)) / Math.log(2)));
-                    }
-                    // Check down
-                    if (r + 1 < size && board.getValue(r + 1, c) != 0) {
-                        smoothness -= Math.abs(valLog - (Math.log(board.getValue(r + 1, c)) / Math.log(2)));
-                    }
+    private int[][] simulateMoveFast(int[][] grid, Direction dir) {
+        int[][] next = new int[4][4];
+        boolean moved = false;
+        
+        for (int i = 0; i < 4; i++) {
+            int[] line = getLine(grid, i, dir);
+            int[] processed = processLine(line);
+            if (!java.util.Arrays.equals(line, processed)) {
+                moved = true;
+            }
+            setLine(next, i, dir, processed);
+        }
+        
+        return moved ? next : null;
+    }
+
+    private int[] getLine(int[][] grid, int index, Direction dir) {
+        int[] line = new int[4];
+        for (int i = 0; i < 4; i++) {
+            line[i] = switch (dir) {
+                case LEFT -> grid[index][i];
+                case RIGHT -> grid[index][3-i];
+                case UP -> grid[i][index];
+                case DOWN -> grid[3-i][index];
+            };
+        }
+        return line;
+    }
+
+    private void setLine(int[][] grid, int index, Direction dir, int[] line) {
+        for (int i = 0; i < 4; i++) {
+            switch (dir) {
+                case LEFT -> grid[index][i] = line[i];
+                case RIGHT -> grid[index][3-i] = line[i];
+                case UP -> grid[i][index] = line[i];
+                case DOWN -> grid[3-i][index] = line[i];
+            }
+        }
+    }
+
+    private int[] processLine(int[] line) {
+        int[] res = new int[4];
+        int target = 0;
+        for (int i = 0; i < 4; i++) {
+            if (line[i] == 0) continue;
+            if (res[target] == 0) {
+                res[target] = line[i];
+            } else if (res[target] == line[i]) {
+                res[target] *= 2;
+                target++;
+            } else {
+                target++;
+                if (target < 4) {
+                    res[target] = line[i];
                 }
             }
         }
-        return smoothness;
+        return res;
     }
-
-    /**
-     * Rewards boards where values strictly increase/decrease in a direction.
-     */
-    private double monotonicity(BoardState board) {
-        double mono = 0;
-        int size = board.size();
-        
-        // Row monotonicity (Left-Right)
-        for (int r = 0; r < size; r++) {
-            double currentMono = 0;
-            for (int c = 0; c < size - 1; c++) {
-                int val1 = board.getValue(r, c);
-                int val2 = board.getValue(r, c + 1);
-                if (val1 > val2) currentMono += (Math.log(val1) / Math.log(2));
-                else if (val1 < val2) currentMono -= (Math.log(val2) / Math.log(2));
-            }
-            mono += Math.abs(currentMono);
+    
+    private int[][] copyGrid(int[][] source) {
+        int[][] copy = new int[4][4];
+        for (int i = 0; i < 4; i++) {
+            System.arraycopy(source[i], 0, copy[i], 0, 4);
         }
-
-        // Column monotonicity (Up-Down)
-        for (int c = 0; c < size; c++) {
-            double currentMono = 0;
-            for (int r = 0; r < size - 1; r++) {
-                int val1 = board.getValue(r, c);
-                int val2 = board.getValue(r + 1, c);
-                if (val1 > val2) currentMono += (Math.log(val1) / Math.log(2));
-                else if (val1 < val2) currentMono -= (Math.log(val2) / Math.log(2));
-            }
-            mono += Math.abs(currentMono);
-        }
-        
-        return mono;
-    }
-
-    private int countEmpty(BoardState board) {
-        int count = 0;
-        for (int[] row : board.grid()) {
-            for (int val : row) {
-                if (val == 0) count++;
-            }
-        }
-        return count;
-    }
-
-    private int weight(int row, int col, int size) {
-        // Snake-like weighting
-        if (row % 2 == 0) {
-            return (size * size - 1) - (row * size + col);
-        } else {
-            return (size * size - 1) - (row * size + (size - 1 - col));
-        }
+        return copy;
     }
 
     private record MoveEvaluation(Direction direction, boolean moved, double score) {

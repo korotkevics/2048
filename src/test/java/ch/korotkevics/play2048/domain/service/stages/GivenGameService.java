@@ -50,7 +50,7 @@ public class GivenGameService extends Stage<GivenGameService> {
     }
 
     public GivenGameService an_ai_that_suggests(Direction direction) {
-        Mockito.when(aiFacade.suggestNextMove(any(), any())).thenReturn(Optional.of(direction));
+        Mockito.when(aiFacade.suggestNextMove(any(), any(), any())).thenReturn(Optional.of(direction));
         return this;
     }
 }

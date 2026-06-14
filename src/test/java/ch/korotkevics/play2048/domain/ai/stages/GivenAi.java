@@ -5,6 +5,7 @@ import ch.korotkevics.play2048.domain.ai.UserSettings;
 import ch.korotkevics.play2048.domain.ai.deterministic.DeterministicAiFacade;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 
@@ -20,6 +21,9 @@ public class GivenAi extends Stage<GivenAi> {
 
     @ProvidedScenarioState
     private UserSettings settings = new UserSettings();
+
+    @ProvidedScenarioState
+    private GameSettings gameSettings = new GameSettings();
 
     public GivenAi a_deterministic_ai() {
         ai = new DeterministicAiFacade();

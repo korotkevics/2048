@@ -4,6 +4,8 @@ import ch.korotkevics.play2048.domain.ai.llm.LlmClient;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import ch.korotkevics.play2048.domain.engine.Game2048Engine;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
+import ch.korotkevics.play2048.domain.engine.MoveResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,19 +43,19 @@ public final class OllamaLlmAdapter implements LlmClient {
     }
 
     @Override
-    public Optional<Direction> askForMove(BoardState boardState) {
+    public Optional<Direction> askForMove(BoardState boardState, GameSettings settings) {
         try {
-            String prompt = constructContextualPrompt(boardState);
+            String prompt = constructAugmentedPrompt(boardState, settings);
             Map<String, Object> requestBody = Map.of(
                     "model", model,
                     "prompt", prompt,
                     "stream", false,
                     "options", Map.of(
                             "temperature", 0.0,
-                            "num_predict", 5, // Extremely strict token limit
+                            "num_predict", 15, 
                             "top_k", 20,
                             "top_p", 0.9,
-                            "stop", Arrays.asList("\n", "Selection:", "Board:", "Task:", "Allowed:", "Instruction:", " ")
+                            "stop", Arrays.asList("\n", "Board:")
                     )
             );
 
@@ -73,23 +75,15 @@ public final class OllamaLlmAdapter implements LlmClient {
             JsonNode root = objectMapper.readTree(response.body());
             String textResponse = root.path("response").asText().trim().toUpperCase();
             
-            System.out.println("[Ollama] Raw AI Response: '" + textResponse + "'");
+            System.out.println("[Ollama] Augmented AI Response: '" + textResponse + "'");
 
-            Optional<Direction> direction = parseDirection(textResponse);
-            if (direction.isPresent()) {
-                System.out.println("[Ollama] Interpreted as: " + direction.get());
-            } else {
-                System.err.println("[Ollama] Direction not found in raw response. Attempting secondary recovery...");
-                // Secondary parsing: try with less strict cleaning
-                direction = parseDirectionFuzzy(textResponse);
-            }
-            return direction;
+            return parseDirection(textResponse);
         } catch (Exception e) {
             return Optional.empty();
         }
     }
 
-    private String constructContextualPrompt(BoardState boardState) {
+    private String constructAugmentedPrompt(BoardState boardState, GameSettings settings) {
         StringBuilder gridBuilder = new StringBuilder();
         int[][] grid = boardState.grid();
         for (int r = 0; r < 4; r++) {
@@ -100,42 +94,52 @@ public final class OllamaLlmAdapter implements LlmClient {
             gridBuilder.append("\n");
         }
 
-        Game2048Engine engine = Game2048Engine.from(grid);
-        String availableMoves = Arrays.stream(Direction.values())
-                .filter(d -> engine.simulateMove(d).moved())
-                .map(Direction::name)
-                .collect(Collectors.joining(", "));
+        // Use dynamic settings for pre-simulation
+        Game2048Engine engine = Game2048Engine.from(grid, 0, new java.util.Random(), settings);
+        String moveStats = Arrays.stream(Direction.values())
+                .map(d -> {
+                    MoveResult res = engine.simulateMove(d);
+                    if (!res.moved()) return null;
+                    long merges = res.deltas().stream().filter(m -> m.merged()).count();
+                    int emptyCells = countEmpty(res.boardState().grid());
+                    return "- %s: Merges: %d, Score Gained: %d, Resulting Empty Cells: %d"
+                            .formatted(d.name(), merges/2, res.scoreGained(), emptyCells);
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(Collectors.joining("\n"));
 
         return """
                 [INST]
-                Task: Select one move for 2048.
-                Rules: Merge identical adjacent numbers.
-                Board:
+                Task: Select the best move for the 2048 game.
+                Goal: Maximize empty cells and merges. Keep the largest numbers in the corners.
+                
+                Current Board:
                 %s
-                Allowed: %s
-                Decision: Output only one word from Allowed.
+                
+                Available Moves & Outcomes:
+                %s
+                
+                Decision: Respond with ONLY the direction name from the list above.
                 [/INST]
-                Selection:""".formatted(gridBuilder.toString(), availableMoves);
+                Selection:""".formatted(gridBuilder.toString(), moveStats);
+    }
+
+    private int countEmpty(int[][] grid) {
+        int count = 0;
+        for (int[] row : grid) {
+            for (int val : row) {
+                if (val == 0) count++;
+            }
+        }
+        return count;
     }
 
     private Optional<Direction> parseDirection(String text) {
-        // Strict word boundary matching
-        String[] words = text.split("[^A-Z]+");
+        String cleanText = text.replaceAll("[^A-Z]", " ");
+        String[] words = cleanText.split("\\s+");
         for (String word : words) {
             for (Direction dir : Direction.values()) {
-                if (word.equals(dir.name())) {
-                    return Optional.of(dir);
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<Direction> parseDirectionFuzzy(String text) {
-        // Fallback for conversational models
-        for (Direction dir : Direction.values()) {
-            if (text.contains(dir.name())) {
-                return Optional.of(dir);
+                if (word.equals(dir.name())) return Optional.of(dir);
             }
         }
         return Optional.empty();

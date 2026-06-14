@@ -16,7 +16,7 @@ public final class LlmAiFacade implements MoveSuggester {
     }
 
     @Override
-    public Optional<Direction> suggestNextMove(BoardState boardState, ch.korotkevics.play2048.domain.ai.UserSettings settings) {
-        return llmClient.askForMove(boardState);
+    public Optional<Direction> suggestNextMove(BoardState boardState, ch.korotkevics.play2048.domain.ai.UserSettings settings, ch.korotkevics.play2048.domain.engine.GameSettings gameSettings) {
+        return llmClient.askForMove(boardState, gameSettings);
     }
 }

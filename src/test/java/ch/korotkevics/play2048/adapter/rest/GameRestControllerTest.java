@@ -9,9 +9,7 @@ import org.testng.annotations.Test;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class GameRestControllerTest {
 
@@ -33,9 +31,12 @@ public class GameRestControllerTest {
     @Test
     public void makeMoveDelegatesToService() {
         GameRestController.MoveRequest request = new GameRestController.MoveRequest(Direction.LEFT);
+        MoveResult result = new MoveResult(Direction.LEFT, true, 0, 0, 0, false, false, new BoardState(new int[4][4]), Collections.emptyList(), null);
+        when(gameService.makeMove(CLIENT_ID, Direction.LEFT)).thenReturn(result);
 
-        controller.makeMove(CLIENT_ID, request);
+        MoveResult response = controller.makeMove(CLIENT_ID, request);
 
+        assertThat(response.direction()).isEqualTo(Direction.LEFT);
         verify(gameService).makeMove(CLIENT_ID, Direction.LEFT);
     }
 

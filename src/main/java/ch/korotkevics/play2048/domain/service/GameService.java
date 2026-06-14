@@ -109,9 +109,11 @@ public final class GameService {
                 .orElse(null);
         if (engine == null) return;
 
-        UserSettings userSettings = getSettings(clientId).userSettings();
+        SettingsRepository.SettingsBundle bundle = getSettings(clientId);
+        UserSettings userSettings = bundle.userSettings();
+        GameSettings gameSettings = bundle.gameSettings();
 
-        aiFacade.suggestNextMove(engine.boardState(), userSettings)
+        aiFacade.suggestNextMove(engine.boardState(), userSettings, gameSettings)
                 .ifPresent(direction -> eventStream.publish(new DomainEventStream.AiSuggestionProduced(clientId, direction)));
     }
 
@@ -153,8 +155,11 @@ public final class GameService {
                     Game2048Engine engine = gameRepository.findByClientId(clientId).orElse(null);
                     if (engine == null || engine.isGameOver() || engine.isWon()) break;
 
-                    UserSettings userSettings = getSettings(clientId).userSettings();
-                    Optional<Direction> suggestion = aiFacade.suggestNextMove(engine.boardState(), userSettings);
+                    SettingsRepository.SettingsBundle bundle = getSettings(clientId);
+                    UserSettings userSettings = bundle.userSettings();
+                    GameSettings gameSettings = bundle.gameSettings();
+
+                    Optional<Direction> suggestion = aiFacade.suggestNextMove(engine.boardState(), userSettings, gameSettings);
 
                     if (suggestion.isPresent()) {
                         MoveResult moveResult = makeMove(clientId, suggestion.get());
@@ -165,13 +170,10 @@ public final class GameService {
                                 Thread.sleep(300); 
                             }
                         } else {
-                            // AI suggested a move that resulted in no change. 
                             consecutiveFailedMoves++;
                             if (consecutiveFailedMoves >= 3) {
-                                System.err.println("[AutoPlay] AI stuck in invalid move loop. Stopping.");
                                 break;
                             }
-                            // Give it a tiny sleep to avoid tight CPU loop
                             Thread.sleep(100);
                         }
                     } else {

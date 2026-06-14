@@ -1,6 +1,7 @@
 package ch.korotkevics.play2048.adapter.llm;
 
 import ch.korotkevics.play2048.domain.engine.BoardState;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,6 +14,6 @@ public class OllamaLlmAdapterTest {
         OllamaLlmAdapter adapter = new OllamaLlmAdapter("http://non-existent-host:1234", "llama3");
         BoardState state = new BoardState(new int[4][4]);
 
-        assertThat(adapter.askForMove(state)).isEmpty();
+        assertThat(adapter.askForMove(state, new GameSettings())).isEmpty();
     }
 }

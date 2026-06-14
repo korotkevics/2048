@@ -5,6 +5,7 @@ import ch.korotkevics.play2048.domain.ai.stages.ThenAi;
 import ch.korotkevics.play2048.domain.ai.stages.WhenAi;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.testng.ScenarioTest;
@@ -33,7 +34,7 @@ public class LlmAiFacadeTest extends ScenarioTest<LlmAiFacadeTest.GivenLlmAi, Wh
 
         public GivenLlmAi a_llm_ai_with_client_that_suggests(Direction direction) {
             LlmClient client = mock(LlmClient.class);
-            org.mockito.Mockito.when(client.askForMove(org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(direction));
+            org.mockito.Mockito.when(client.askForMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(direction));
             ai = new LlmAiFacade(client);
             return this;
         }

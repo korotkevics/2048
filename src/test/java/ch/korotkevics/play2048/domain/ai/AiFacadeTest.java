@@ -3,6 +3,7 @@ package ch.korotkevics.play2048.domain.ai;
 import ch.korotkevics.play2048.domain.ai.stages.ThenAi;
 import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
@@ -44,8 +45,8 @@ public class AiFacadeTest extends ScenarioTest<AiFacadeTest.GivenAiFacade, AiFac
             MoveSuggester llm = mock(MoveSuggester.class);
             settings = new UserSettings();
             
-            org.mockito.Mockito.when(det.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.UP));
-            org.mockito.Mockito.when(llm.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.DOWN));
+            org.mockito.Mockito.when(det.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.UP));
+            org.mockito.Mockito.when(llm.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.DOWN));
 
             ai = new AiFacade(Map.of(
                     UserSettings.AiType.DETERMINISTIC, det,
@@ -76,7 +77,7 @@ public class AiFacadeTest extends ScenarioTest<AiFacadeTest.GivenAiFacade, AiFac
         }
 
         public WhenAiFacade the_ai_is_asked_for_a_move() {
-            suggestion = ai.suggestNextMove(boardState, settings);
+            suggestion = ai.suggestNextMove(boardState, settings, new GameSettings());
             return this;
         }
     }
