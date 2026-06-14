@@ -46,3 +46,4 @@ In no particular order,
 - I also introduced hotkeys for a few things for faster interaction
 - Persistence: it's normally unnecessary to have this for this kind of a game, as much as the back-end overall, it's just for completeness
 - The app is obviously created using LLM (Gemini CLI) but under my strict guidance ;)
+- Git: Professional source control workflows (branches, PRs, and AI/peer reviews) were bypassed for this scope to keep the project focused and concise.
