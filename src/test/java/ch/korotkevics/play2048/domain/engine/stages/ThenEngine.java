@@ -11,8 +11,16 @@ public class ThenEngine extends Stage<ThenEngine> {
     @ExpectedScenarioState
     private MoveResult lastResult;
 
+    @ExpectedScenarioState
+    private Exception exception;
+
     public ThenEngine the_board_has_moved() {
         assertThat(lastResult.moved()).isTrue();
+        return this;
+    }
+
+    public ThenEngine an_illegal_argument_exception_is_thrown() {
+        assertThat(exception).isInstanceOf(IllegalArgumentException.class);
         return this;
     }
 
@@ -31,6 +39,11 @@ public class ThenEngine extends Stage<ThenEngine> {
         return this;
     }
 
+    public ThenEngine the_grid_is_of_size(int expected) {
+        assertThat(lastResult.boardState().size()).isEqualTo(expected);
+        return this;
+    }
+
     public ThenEngine the_grid_is(int[][] expected) {
         assertThat(lastResult.boardState().grid()).isDeepEqualTo(expected);
         return this;
@@ -41,8 +54,23 @@ public class ThenEngine extends Stage<ThenEngine> {
         return this;
     }
 
+    public ThenEngine the_game_is_not_won() {
+        assertThat(lastResult.won()).isFalse();
+        return this;
+    }
+
     public ThenEngine the_game_is_over() {
         assertThat(lastResult.gameOver()).isTrue();
+        return this;
+    }
+
+    public ThenEngine the_game_is_not_over() {
+        assertThat(lastResult.gameOver()).isFalse();
+        return this;
+    }
+
+    public ThenEngine the_game_is_over_is(boolean expected) {
+        assertThat(lastResult.gameOver()).isEqualTo(expected);
         return this;
     }
 
@@ -55,6 +83,16 @@ public class ThenEngine extends Stage<ThenEngine> {
             }
         }
         assertThat(count).isEqualTo(expected);
+        return this;
+    }
+
+    public ThenEngine moves_have_been_recorded() {
+        assertThat(lastResult.deltas()).isNotEmpty();
+        return this;
+    }
+
+    public ThenEngine no_moves_have_been_recorded() {
+        assertThat(lastResult.deltas()).isEmpty();
         return this;
     }
 }

@@ -23,6 +23,9 @@ public class ThenGameService extends Stage<ThenGameService> {
     @ExpectedScenarioState
     private DomainEventStream eventStream;
 
+    @ExpectedScenarioState
+    private ch.korotkevics.play2048.domain.service.GameRepository gameRepository;
+
     public ThenGameService a_game_id_is_generated() {
         assertThat(moveResult).isNotNull();
         return this;
@@ -49,6 +52,11 @@ public class ThenGameService extends Stage<ThenGameService> {
     }
 
     public ThenGameService no_exception_is_thrown() {
+        return this;
+    }
+
+    public ThenGameService the_stale_games_cleanup_was_called_on_repository() {
+        verify(gameRepository).deleteStaleGames(any());
         return this;
     }
 }

@@ -34,4 +34,9 @@ public class GivenAi extends Stage<GivenAi> {
         boardState = new BoardState(grid);
         return this;
     }
+
+    public GivenAi custom_game_settings(GameSettings settings) {
+        this.gameSettings = settings;
+        return this;
+    }
 }

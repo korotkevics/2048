@@ -64,4 +64,9 @@ public class WhenGameService extends Stage<WhenGameService> {
         gameService.abandonGame(clientId);
         return this;
     }
+
+    public WhenGameService the_stale_games_are_cleaned_up() {
+        gameService.cleanupStaleGames();
+        return this;
+    }
 }

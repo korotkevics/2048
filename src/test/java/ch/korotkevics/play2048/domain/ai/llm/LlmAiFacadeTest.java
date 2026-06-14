@@ -26,6 +26,14 @@ public class LlmAiFacadeTest extends ScenarioTest<LlmAiFacadeTest.GivenLlmAi, Wh
         then().the_suggested_direction_is(Direction.RIGHT);
     }
 
+    @Test
+    public void llm_ai_handles_empty_suggestion() {
+        given().a_llm_ai_with_client_that_suggests(null)
+                .and().a_board_with_grid(new int[4][4]);
+        when().the_ai_is_asked_for_a_move();
+        then().no_suggestion_is_made();
+    }
+
     public static class GivenLlmAi extends Stage<GivenLlmAi> {
         @ProvidedScenarioState
         private MoveSuggester ai;
@@ -34,7 +42,8 @@ public class LlmAiFacadeTest extends ScenarioTest<LlmAiFacadeTest.GivenLlmAi, Wh
 
         public GivenLlmAi a_llm_ai_with_client_that_suggests(Direction direction) {
             LlmClient client = mock(LlmClient.class);
-            org.mockito.Mockito.when(client.askForMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(direction));
+            org.mockito.Mockito.when(client.askForMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any()))
+                    .thenReturn(Optional.ofNullable(direction));
             ai = new LlmAiFacade(client);
             return this;
         }

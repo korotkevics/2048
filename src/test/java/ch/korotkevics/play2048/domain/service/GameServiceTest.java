@@ -37,6 +37,15 @@ public class GameServiceTest extends ScenarioTest<GivenGameService, WhenGameServ
     }
 
     @Test
+    public void requesting_ai_suggestion_handles_empty_result() {
+        given().a_game_service()
+                .and().an_ai_that_suggests(null);
+        when().a_new_game_is_started()
+                .and().an_ai_suggestion_is_requested();
+        then().no_exception_is_thrown();
+    }
+
+    @Test
     public void undoing_a_move_restores_previous_state() {
         given().a_game_service();
         when().a_new_game_is_started()
@@ -67,6 +76,22 @@ public class GameServiceTest extends ScenarioTest<GivenGameService, WhenGameServ
         when().a_new_game_is_started()
                 .and().auto_play_is_started()
                 .and().auto_play_is_stopped();
+        then().no_exception_is_thrown();
+    }
+
+    @Test
+    public void cleanup_stale_games_triggers_repository() {
+        given().a_game_service();
+        when().the_stale_games_are_cleaned_up();
+        then().the_stale_games_cleanup_was_called_on_repository();
+    }
+
+    @Test
+    public void starting_new_game_stops_existing_auto_play() {
+        given().a_game_service();
+        when().a_new_game_is_started()
+                .and().auto_play_is_started()
+                .and().a_new_game_is_started();
         then().no_exception_is_thrown();
     }
 }

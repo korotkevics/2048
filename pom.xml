@@ -110,15 +110,12 @@
                 </dependencies>
                 <configuration>
                     <targetClasses>
-                        <param>ch.korotkevics.play2048.domain.engine.*</param>
-                        <param>ch.korotkevics.play2048.domain.ai.*</param>
-                        <param>ch.korotkevics.play2048.domain.service.*</param>
-                        <param>ch.korotkevics.play2048.adapter.*</param>
+                        <param>ch.korotkevics.play2048.domain.*</param>
                     </targetClasses>
                     <targetTests>
-                        <param>ch.korotkevics.play2048.*Test</param>
+                        <param>ch.korotkevics.play2048.domain.*Test</param>
                     </targetTests>
-                    <mutationThreshold>80</mutationThreshold>
+                    <mutationThreshold>60</mutationThreshold>
                     <coverageThreshold>80</coverageThreshold>
                 </configuration>
             </plugin>

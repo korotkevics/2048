@@ -25,7 +25,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 72679417,
+              "durationInNanos": 589459,
               "depth": 0,
               "parentFailed": false
             },
@@ -41,7 +41,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 802042,
+              "durationInNanos": 216125,
               "depth": 0,
               "parentFailed": false
             },
@@ -57,7 +57,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 75125,
+              "durationInNanos": 49542,
               "depth": 0,
               "parentFailed": false
             },
@@ -73,7 +73,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 28500,
+              "durationInNanos": 11667,
               "depth": 0,
               "parentFailed": false
             }
@@ -81,11 +81,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 78287333
+          "durationInNanos": 1131375
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 78287333
+      "durationInNanos": 1131375
     },
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
@@ -110,7 +110,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 555417,
+              "durationInNanos": 320000,
               "depth": 0,
               "parentFailed": false
             },
@@ -126,7 +126,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 358958,
+              "durationInNanos": 151041,
               "depth": 0,
               "parentFailed": false
             },
@@ -142,7 +142,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 5879292,
+              "durationInNanos": 43167,
               "depth": 0,
               "parentFailed": false
             },
@@ -158,7 +158,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 107458,
+              "durationInNanos": 9416,
               "depth": 0,
               "parentFailed": false
             },
@@ -174,7 +174,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 25667,
+              "durationInNanos": 5583,
               "depth": 0,
               "parentFailed": false
             }
@@ -182,11 +182,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 7683459
+          "durationInNanos": 727959
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 7683459
+      "durationInNanos": 727959
     },
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
@@ -211,7 +211,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 456791,
+              "durationInNanos": 228833,
               "depth": 0,
               "parentFailed": false
             },
@@ -227,7 +227,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 309542,
+              "durationInNanos": 123375,
               "depth": 0,
               "parentFailed": false
             },
@@ -250,7 +250,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 4206083,
+              "durationInNanos": 241583,
               "depth": 0,
               "parentFailed": false
             },
@@ -266,7 +266,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 1340834,
+              "durationInNanos": 72125,
               "depth": 0,
               "parentFailed": false
             }
@@ -274,11 +274,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 6843458
+          "durationInNanos": 798958
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 6843458
+      "durationInNanos": 798958
     },
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
@@ -303,7 +303,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 432875,
+              "durationInNanos": 202708,
               "depth": 0,
               "parentFailed": false
             },
@@ -326,7 +326,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 414125,
+              "durationInNanos": 129417,
               "depth": 0,
               "parentFailed": false
             },
@@ -342,7 +342,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 245167,
+              "durationInNanos": 107625,
               "depth": 0,
               "parentFailed": false
             },
@@ -358,7 +358,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 234542,
+              "durationInNanos": 72250,
               "depth": 0,
               "parentFailed": false
             },
@@ -374,7 +374,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 116000,
+              "durationInNanos": 61459,
               "depth": 0,
               "parentFailed": false
             }
@@ -382,11 +382,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 1974458
+          "durationInNanos": 694000
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 1974458
+      "durationInNanos": 694000
     },
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
@@ -411,7 +411,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 417000,
+              "durationInNanos": 215083,
               "depth": 0,
               "parentFailed": false
             },
@@ -427,7 +427,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 243958,
+              "durationInNanos": 109500,
               "depth": 0,
               "parentFailed": false
             },
@@ -443,7 +443,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 37916,
+              "durationInNanos": 11208,
               "depth": 0,
               "parentFailed": false
             },
@@ -459,7 +459,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 115417,
+              "durationInNanos": 62500,
               "depth": 0,
               "parentFailed": false
             }
@@ -467,11 +467,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 1224000
+          "durationInNanos": 506750
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 1224000
+      "durationInNanos": 506750
     },
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
@@ -496,7 +496,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 389792,
+              "durationInNanos": 214791,
               "depth": 0,
               "parentFailed": false
             },
@@ -512,7 +512,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 248209,
+              "durationInNanos": 113584,
               "depth": 0,
               "parentFailed": false
             },
@@ -535,7 +535,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 538000,
+              "durationInNanos": 210083,
               "depth": 0,
               "parentFailed": false
             },
@@ -551,7 +551,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 361750,
+              "durationInNanos": 93542,
               "depth": 0,
               "parentFailed": false
             },
@@ -567,7 +567,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 41334,
+              "durationInNanos": 10417,
               "depth": 0,
               "parentFailed": false
             },
@@ -583,7 +583,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 151458,
+              "durationInNanos": 49250,
               "depth": 0,
               "parentFailed": false
             }
@@ -591,11 +591,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 2294958
+          "durationInNanos": 824500
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 2294958
+      "durationInNanos": 824500
     },
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
@@ -620,7 +620,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 359292,
+              "durationInNanos": 277209,
               "depth": 0,
               "parentFailed": false
             },
@@ -635,22 +635,22 @@
                   "value": "settings are updated"
                 },
                 {
-                  "value": "ch.korotkevics.play2048.domain.ai.UserSettings@32eb43ed",
+                  "value": "ch.korotkevics.play2048.domain.ai.UserSettings@65d4243a",
                   "argumentInfo": {
                     "argumentName": "userSettings",
-                    "formattedValue": "ch.korotkevics.play2048.domain.ai.UserSettings@32eb43ed"
+                    "formattedValue": "ch.korotkevics.play2048.domain.ai.UserSettings@65d4243a"
                   }
                 },
                 {
-                  "value": "ch.korotkevics.play2048.domain.engine.GameSettings@3157248a",
+                  "value": "ch.korotkevics.play2048.domain.engine.GameSettings@1af32d4b",
                   "argumentInfo": {
                     "argumentName": "gameSettings",
-                    "formattedValue": "ch.korotkevics.play2048.domain.engine.GameSettings@3157248a"
+                    "formattedValue": "ch.korotkevics.play2048.domain.engine.GameSettings@1af32d4b"
                   }
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 254792,
+              "durationInNanos": 171917,
               "depth": 0,
               "parentFailed": false
             },
@@ -666,7 +666,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 19375,
+              "durationInNanos": 7167,
               "depth": 0,
               "parentFailed": false
             }
@@ -674,11 +674,11 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 1080125
+          "durationInNanos": 598500
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 1080125
+      "durationInNanos": 598500
     }
   ],
   "tagMap": {}

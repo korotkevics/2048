@@ -81,4 +81,15 @@ public class GameSettingsBddTest extends ScenarioTest<GivenSettings, WhenSetting
         when().the_configuration_is_validated();
         then().an_illegal_state_exception_is_thrown();
     }
+
+    @Test
+    public void empty_spawn_configuration_fails_validation() {
+        given().default_settings();
+        when().a_spawn_value_is_removed(2)
+                .and().a_spawn_value_is_removed(4);
+        // This should fail in remove() already based on current code, 
+        // but let's test the validate() logic too if we could bypass remove() check.
+        // Actually remove() has a check.
+        then().an_illegal_state_exception_is_thrown();
+    }
 }
