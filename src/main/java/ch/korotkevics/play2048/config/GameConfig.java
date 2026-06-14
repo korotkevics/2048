@@ -38,7 +38,7 @@ public class GameConfig {
     public MoveSuggester aiFacade() {
         DeterministicAiFacade deterministic = new DeterministicAiFacade();
         // Default model for Ollama, can be further configured
-        LlmAiFacade llm = new LlmAiFacade(new OllamaLlmAdapter("phi3.5"));
+        LlmAiFacade llm = new LlmAiFacade(new OllamaLlmAdapter("qwen2.5:1.5b"));
         
         return new AiFacade(Map.of(
                 UserSettings.AiType.DETERMINISTIC, deterministic,

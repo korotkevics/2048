@@ -58,7 +58,7 @@ services:
         condition: service_healthy
     environment:
       - OLLAMA_HOST=http://ollama:11434
-    command: pull phi3.5
+    command: pull qwen2.5:1.5b
 
 volumes:
   ollama-data:

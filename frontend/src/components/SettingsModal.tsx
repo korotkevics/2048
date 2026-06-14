@@ -97,8 +97,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             value={settings.aiType} 
             onChange={(e) => handleChangeAiType(e.target.value)}
           >
-            <option value="DETERMINISTIC">Deterministic (Standard)</option>
-            <option value="LLM">Phi-3.5 Mini (LLM Logic)</option>
+            <option value="DETERMINISTIC">Algo based AI</option>
+            <option value="LLM">LLM based AI</option>
           </select>
         </div>
 

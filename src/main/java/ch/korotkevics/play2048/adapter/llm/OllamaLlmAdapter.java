@@ -29,6 +29,14 @@ public final class OllamaLlmAdapter implements LlmClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
+    // Same professional weight matrix as the Algo AI
+    private static final double[][] WEIGHT_MATRIX = {
+        {2048, 1024, 512, 256},
+        {16,   32,   64,  128},
+        {8,    4,    2,   1},
+        {0.5,  0.25, 0.1, 0.05}
+    };
+
     public OllamaLlmAdapter(String model) {
         this(System.getenv().getOrDefault(ENV_VAR_URL, DEFAULT_URL), model);
     }
@@ -45,17 +53,15 @@ public final class OllamaLlmAdapter implements LlmClient {
     @Override
     public Optional<Direction> askForMove(BoardState boardState, GameSettings settings) {
         try {
-            String prompt = constructAugmentedPrompt(boardState, settings);
+            String prompt = constructHardenedPrompt(boardState, settings);
             Map<String, Object> requestBody = Map.of(
                     "model", model,
                     "prompt", prompt,
+                    "format", "json",
                     "stream", false,
                     "options", Map.of(
                             "temperature", 0.0,
-                            "num_predict", 15, 
-                            "top_k", 20,
-                            "top_p", 0.9,
-                            "stop", Arrays.asList("\n", "Board:")
+                            "num_predict", 15
                     )
             );
 
@@ -67,61 +73,83 @@ public final class OllamaLlmAdapter implements LlmClient {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() != 200) {
-                return Optional.empty();
-            }
+            if (response.statusCode() != 200) return Optional.empty();
 
             JsonNode root = objectMapper.readTree(response.body());
-            String textResponse = root.path("response").asText().trim().toUpperCase();
-            
-            System.out.println("[Ollama] Augmented AI Response: '" + textResponse + "'");
+            JsonNode responseData = objectMapper.readTree(root.path("response").asText());
+            String move = responseData.path("move").asText().toUpperCase();
 
-            return parseDirection(textResponse);
+            System.out.println("[LLM] Hardened choice: " + move);
+
+            return Arrays.stream(Direction.values())
+                    .filter(d -> d.name().equals(move))
+                    .findFirst();
         } catch (Exception e) {
             return Optional.empty();
         }
     }
 
-    private String constructAugmentedPrompt(BoardState boardState, GameSettings settings) {
-        StringBuilder gridBuilder = new StringBuilder();
-        int[][] grid = boardState.grid();
-        for (int r = 0; r < 4; r++) {
-            gridBuilder.append("| ");
-            for (int c = 0; c < 4; c++) {
-                gridBuilder.append(grid[r][c] == 0 ? "." : grid[r][c]).append(" | ");
-            }
-            gridBuilder.append("\n");
-        }
-
-        // Use dynamic settings for pre-simulation
-        Game2048Engine engine = Game2048Engine.from(grid, 0, new java.util.Random(), settings);
-        String moveStats = Arrays.stream(Direction.values())
+    private String constructHardenedPrompt(BoardState boardState, GameSettings settings) {
+        Game2048Engine engine = Game2048Engine.from(boardState.grid(), 0, new java.util.Random(), settings);
+        
+        String moveAnalysis = Arrays.stream(Direction.values())
                 .map(d -> {
                     MoveResult res = engine.simulateMove(d);
                     if (!res.moved()) return null;
-                    long merges = res.deltas().stream().filter(m -> m.merged()).count();
-                    int emptyCells = countEmpty(res.boardState().grid());
-                    return "- %s: Merges: %d, Score Gained: %d, Resulting Empty Cells: %d"
-                            .formatted(d.name(), merges/2, res.scoreGained(), emptyCells);
+                    
+                    double strat = calculateHeuristic(res.boardState().grid());
+                    int empty = countEmpty(res.boardState().grid());
+                    
+                    // Add 1-step foresight (best merge in next turn)
+                    long nextMerges = 0;
+                    Game2048Engine nextEngine = Game2048Engine.from(res.boardState().grid(), 0, new java.util.Random(), settings);
+                    for (Direction nextDir : Direction.values()) {
+                        long m = nextEngine.simulateMove(nextDir).deltas().stream().filter(dm -> dm.merged()).count();
+                        nextMerges = Math.max(nextMerges, m/2);
+                    }
+
+                    return "- %s: StrategyScore=%.0f, Space=%d, ForesightMerges=%d"
+                            .formatted(d.name(), strat, empty, nextMerges);
                 })
                 .filter(java.util.Objects::nonNull)
                 .collect(Collectors.joining("\n"));
 
         return """
-                [INST]
-                Task: Select the best move for the 2048 game.
-                Goal: Maximize empty cells and merges. Keep the largest numbers in the corners.
+                You are a Professional 2048 AI.
+                CRITICAL RULE: Highest number MUST stay in the TOP-LEFT corner (0,0). 
+                Any move that fails this is penalized by -1,000,000.
                 
-                Current Board:
+                Outcomes:
                 %s
                 
-                Available Moves & Outcomes:
-                %s
-                
-                Decision: Respond with ONLY the direction name from the list above.
-                [/INST]
-                Selection:""".formatted(gridBuilder.toString(), moveStats);
+                Decision: Pick the move with the highest StrategyScore. Output JSON ONLY.
+                JSON: {"move": "..."}""".formatted(moveAnalysis);
+    }
+
+    private double calculateHeuristic(int[][] grid) {
+        double score = 0;
+        int maxVal = 0;
+        int maxR = 0, maxC = 0;
+
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 4; c++) {
+                int val = grid[r][c];
+                if (val > maxVal) {
+                    maxVal = val;
+                    maxR = r; maxC = c;
+                }
+                if (val != 0) {
+                    score += (Math.log(val) / Math.log(2)) * WEIGHT_MATRIX[r][c];
+                }
+            }
+        }
+
+        // DRACONIAN CORNER-LOCK PENALTY
+        if (maxR != 0 || maxC != 0) {
+            score -= 1_000_000;
+        }
+
+        return score;
     }
 
     private int countEmpty(int[][] grid) {
@@ -132,16 +160,5 @@ public final class OllamaLlmAdapter implements LlmClient {
             }
         }
         return count;
-    }
-
-    private Optional<Direction> parseDirection(String text) {
-        String cleanText = text.replaceAll("[^A-Z]", " ");
-        String[] words = cleanText.split("\\s+");
-        for (String word : words) {
-            for (Direction dir : Direction.values()) {
-                if (word.equals(dir.name())) return Optional.of(dir);
-            }
-        }
-        return Optional.empty();
     }
 }
