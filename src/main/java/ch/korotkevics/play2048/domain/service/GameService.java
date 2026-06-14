@@ -26,9 +26,7 @@ public final class GameService {
     private final MoveSuggester aiFacade;
     private final DomainEventStream eventStream;
     
-    // Tracks active auto-play threads by client ID
     private final Map<String, Future<?>> activeAutoPlays = new ConcurrentHashMap<>();
-    // Tracks a unique token for each auto-play session to prevent "ghost" threads
     private final Map<String, String> activeAutoPlayTokens = new ConcurrentHashMap<>();
     
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -148,26 +146,33 @@ public final class GameService {
 
         Future<?> future = executor.submit(() -> {
             try {
+                int consecutiveFailedMoves = 0;
                 while (!Thread.currentThread().isInterrupted()) {
-                    // Check if this thread is still the active one for this client
-                    if (!sessionToken.equals(activeAutoPlayTokens.get(clientId))) {
-                        break;
-                    }
+                    if (!sessionToken.equals(activeAutoPlayTokens.get(clientId))) break;
 
                     Game2048Engine engine = gameRepository.findByClientId(clientId).orElse(null);
-                    if (engine == null || engine.isGameOver() || engine.isWon()) {
-                        break;
-                    }
+                    if (engine == null || engine.isGameOver() || engine.isWon()) break;
 
                     UserSettings userSettings = getSettings(clientId).userSettings();
                     Optional<Direction> suggestion = aiFacade.suggestNextMove(engine.boardState(), userSettings);
 
                     if (suggestion.isPresent()) {
-                        makeMove(clientId, suggestion.get());
+                        MoveResult moveResult = makeMove(clientId, suggestion.get());
                         
-                        // Deterministic is too fast, but LLM is slow enough
-                        if (userSettings.getAiType() == UserSettings.AiType.DETERMINISTIC) {
-                            Thread.sleep(300); 
+                        if (moveResult.moved()) {
+                            consecutiveFailedMoves = 0;
+                            if (userSettings.getAiType() == UserSettings.AiType.DETERMINISTIC) {
+                                Thread.sleep(300); 
+                            }
+                        } else {
+                            // AI suggested a move that resulted in no change. 
+                            consecutiveFailedMoves++;
+                            if (consecutiveFailedMoves >= 3) {
+                                System.err.println("[AutoPlay] AI stuck in invalid move loop. Stopping.");
+                                break;
+                            }
+                            // Give it a tiny sleep to avoid tight CPU loop
+                            Thread.sleep(100);
                         }
                     } else {
                         break; 

@@ -28,11 +28,16 @@ function App() {
     if (isStarting.current) return;
     isStarting.current = true;
     try {
-      await startNewGame();
+      console.log('[App] Atomic Start & Move:', direction);
+      const startResult = await startNewGame();
       dispatch(setGameId(clientId));
+      
+      // Immediately execute the move
       const moveResult = await makeMove(direction);
       if (moveResult) {
         dispatch(updateGameState(moveResult));
+      } else if (startResult) {
+        dispatch(updateGameState(startResult));
       }
     } catch (e) {
       console.error('[App] Failed to start and move:', e);
@@ -42,12 +47,34 @@ function App() {
   };
 
   const handleReset = async () => {
+    console.log('[App] Resetting Game');
     handleStopAutoPlay();
     dispatch(resetGame());
   };
 
   const handleStartAutoPlay = async () => {
+    if (isStarting.current) return;
     setIsAutoPlaying(true);
+
+    if (!game.gameId || game.status === 'idle' || !game.boardState) {
+        isStarting.current = true;
+        try {
+            console.log('[App] Auto-Play: Starting new game first...');
+            const startResult = await startNewGame();
+            dispatch(setGameId(clientId));
+            if (startResult) {
+                dispatch(updateGameState(startResult));
+            }
+        } catch (e) {
+            console.error('[App] Failed to start game for auto-play:', e);
+            setIsAutoPlaying(false);
+            isStarting.current = false;
+            return;
+        } finally {
+            isStarting.current = false;
+        }
+    }
+
     await startAutoPlay();
   };
 
@@ -81,6 +108,7 @@ function App() {
       const client = new Client({
         brokerURL: `ws://${window.location.host}/ws-game`,
         onConnect: () => {
+          console.log('[WS] Connected to channel:', clientId);
           client.subscribe(`/topic/game/${clientId}`, (message) => {
             const event = JSON.parse(message.body);
             if (event.type === 'MOVE') {
@@ -106,7 +134,15 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
         handleReset();
+        return;
+      }
+
+      if (e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        if (isAutoPlaying) handleStopAutoPlay();
+        else handleStartAutoPlay();
         return;
       }
       
@@ -118,18 +154,19 @@ function App() {
 
       if (direction) {
         e.preventDefault();
-        if (isAutoPlaying) return; 
+        if (isAutoPlaying) {
+           console.log('[App] Input blocked: Auto-Play active');
+           return; 
+        }
 
-        if (!game.gameId || game.status === 'idle') {
+        if (!game.gameId || game.status === 'idle' || !game.boardState) {
           handleStartAndMove(direction);
           return;
         }
 
-        if (game.status === 'playing' && game.boardState) {
-          makeMove(direction).then(res => {
-            if (res) dispatch(updateGameState(res));
-          });
-        }
+        makeMove(direction).then(res => {
+          if (res) dispatch(updateGameState(res));
+        });
         return;
       }
 
@@ -164,16 +201,16 @@ function App() {
 
       <BoardWrapper>
         {(game.gameOver || game.won) && <GameOverOverlay won={game.won} />}
-        {(!game.boardState) && <StartOverlay />}
+        {!game.boardState && <StartOverlay />}
         
         <GameGrid boardState={game.boardState} />
       </BoardWrapper>
 
       <div className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest flex flex-col items-center gap-4">
           <div className="flex gap-4">
-            <button onClick={handleUndo} className="hover:text-slate-600 transition-colors">(U) Undo</button>
-            <button onClick={handleAi} className="hover:text-slate-600 transition-colors">(A) AI Suggest</button>
-            <button onClick={handleReset} className="hover:text-slate-600 transition-colors">(N) New Game</button>
+            <button onClick={handleUndo} className="hover:text-slate-600 transition-colors uppercase">(U) Undo</button>
+            <button onClick={handleAi} className="hover:text-slate-600 transition-colors uppercase">(A) AI Suggest</button>
+            <button onClick={handleReset} className="hover:text-slate-600 transition-colors uppercase">(N) New Game</button>
           </div>
           
           <button 
@@ -184,7 +221,7 @@ function App() {
                 : "bg-[#002244] text-white hover:bg-[#003366]"
             }`}
           >
-            {isAutoPlaying ? "STOP AUTO-PLAY" : "START AUTO-PLAY"}
+            {isAutoPlaying ? "STOP AUTO-PLAY (P)" : "START AUTO-PLAY (P)"}
           </button>
       </div>
 
