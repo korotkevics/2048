@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
@@ -38,6 +39,16 @@ public class ThenGameService extends Stage<ThenGameService> {
 
     public ThenGameService a_move_made_event_is_published() {
         verify(eventStream, atLeastOnce()).publish(any(DomainEventStream.MoveMade.class));
+        return this;
+    }
+
+    public ThenGameService a_move_made_event_is_published_with_score(int score) {
+        verify(eventStream, atLeastOnce()).publish(argThat(event -> {
+            if (event instanceof DomainEventStream.MoveMade m) {
+                return m.moveResult().score() == score;
+            }
+            return false;
+        }));
         return this;
     }
 

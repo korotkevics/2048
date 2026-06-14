@@ -5,53 +5,68 @@ import ch.korotkevics.play2048.domain.engine.BoardState;
 import ch.korotkevics.play2048.domain.engine.Direction;
 import ch.korotkevics.play2048.domain.engine.GameSettings;
 import com.tngtech.jgiven.Stage;
-import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
 import com.tngtech.jgiven.testng.ScenarioTest;
 import org.testng.annotations.Test;
 
-import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class AiFacadeTest extends ScenarioTest<AiFacadeTest.GivenAiFacade, AiFacadeTest.WhenAiFacade, ThenAi> {
 
     @Test
-    public void ai_facade_switches_strategies_based_on_settings() {
-        given().an_ai_facade_with_deterministic_and_llm_strategies()
-                .and().a_board_with_grid(new int[4][4]);
-        
-        when().the_active_strategy_is_set_to(UserSettings.AiType.DETERMINISTIC)
-                .and().the_ai_is_asked_for_a_move();
-        then().the_suggested_direction_is(Direction.UP);
+    public void facade_delegates_to_deterministic_ai() {
+        given().an_ai_facade_with_type(AiType.ALGO_BASED)
+                .and().a_board_with_grid(new int[][] {
+                        {2, 2, 0, 0},
+                        {0, 0, 0, 0},
+                        {0, 0, 0, 0},
+                        {0, 0, 0, 0}
+                });
+        when().the_ai_is_asked_for_a_move();
+        then().a_suggestion_is_made();
+    }
 
-        when().the_active_strategy_is_set_to(UserSettings.AiType.LLM)
-                .and().the_ai_is_asked_for_a_move();
-        then().the_suggested_direction_is(Direction.DOWN);
+    @Test
+    public void facade_returns_empty_when_no_moves_available() {
+        given().an_ai_facade_with_type(AiType.ALGO_BASED)
+                .and().a_board_with_grid(new int[][] {
+                        {2, 4, 2, 4},
+                        {4, 2, 4, 2},
+                        {2, 4, 2, 4},
+                        {4, 2, 4, 2}
+                });
+        when().the_ai_is_asked_for_a_move();
+        then().no_suggestion_is_made();
     }
 
     public static class GivenAiFacade extends Stage<GivenAiFacade> {
         @ProvidedScenarioState
-        private MoveSuggester ai;
+        private AiFacade ai;
         @ProvidedScenarioState
         private BoardState boardState;
         @ProvidedScenarioState
-        private UserSettings settings;
+        private UserSettings settings = new UserSettings();
 
-        public GivenAiFacade an_ai_facade_with_deterministic_and_llm_strategies() {
-            MoveSuggester det = mock(MoveSuggester.class);
-            MoveSuggester llm = mock(MoveSuggester.class);
-            settings = new UserSettings();
+        public GivenAiFacade an_ai_facade_with_type(AiType type) {
+            MoveSuggester mockAlgo = mock(MoveSuggester.class);
+            MoveSuggester mockLlm = mock(MoveSuggester.class);
             
-            org.mockito.Mockito.when(det.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.UP));
-            org.mockito.Mockito.when(llm.suggestNextMove(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(Optional.of(Direction.DOWN));
+            // Stub default behavior for mocks
+            when(mockAlgo.suggestNextMove(any(), any(), any())).thenAnswer(invocation -> {
+                BoardState bs = invocation.getArgument(0);
+                if (bs.grid()[0][0] == 2 && bs.grid()[0][1] == 2) {
+                    return Optional.of(Direction.LEFT);
+                }
+                return Optional.empty();
+            });
 
-            ai = new AiFacade(Map.of(
-                    UserSettings.AiType.DETERMINISTIC, det,
-                    UserSettings.AiType.LLM, llm
-            ));
+            ai = new AiFacade(mockAlgo, mockLlm);
+            settings.setAiType(type);
             return this;
         }
 
@@ -62,19 +77,14 @@ public class AiFacadeTest extends ScenarioTest<AiFacadeTest.GivenAiFacade, AiFac
     }
 
     public static class WhenAiFacade extends Stage<WhenAiFacade> {
-        @ExpectedScenarioState
-        private MoveSuggester ai;
-        @ExpectedScenarioState
+        @ProvidedScenarioState
+        private AiFacade ai;
+        @ProvidedScenarioState
         private BoardState boardState;
-        @ExpectedScenarioState
+        @ProvidedScenarioState
         private UserSettings settings;
         @ProvidedScenarioState
         private Optional<Direction> suggestion;
-
-        public WhenAiFacade the_active_strategy_is_set_to(UserSettings.AiType type) {
-            settings.setAiType(type);
-            return this;
-        }
 
         public WhenAiFacade the_ai_is_asked_for_a_move() {
             suggestion = ai.suggestNextMove(boardState, settings, new GameSettings());

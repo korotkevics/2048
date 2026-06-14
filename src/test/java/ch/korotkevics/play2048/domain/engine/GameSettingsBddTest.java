@@ -35,12 +35,22 @@ public class GameSettingsBddTest extends ScenarioTest<GivenSettings, WhenSetting
         given().default_settings();
         when().a_spawn_probability_is_updated(8, 0.5);
         then().the_spawn_probability_for_value_is(8, 0.5);
+
+        // Boundary cases
+        when().a_spawn_probability_is_updated(16, 0.0);
+        then().the_spawn_probability_for_value_is(16, 0.0);
+        
+        when().a_spawn_probability_is_updated(32, 1.0);
+        then().the_spawn_probability_for_value_is(32, 1.0);
     }
 
     @Test
     public void invalid_spawn_probabilities_throw_exception() {
         given().default_settings();
         when().a_spawn_probability_is_updated(2, 1.1);
+        then().an_illegal_argument_exception_is_thrown();
+
+        when().a_spawn_probability_is_updated(2, -0.1);
         then().an_illegal_argument_exception_is_thrown();
     }
 
@@ -56,6 +66,13 @@ public class GameSettingsBddTest extends ScenarioTest<GivenSettings, WhenSetting
         given().default_settings();
         when().a_spawn_value_is_removed(4);
         then().the_spawn_configuration_does_not_contain(4);
+    }
+
+    @Test
+    public void removing_non_existent_value_does_not_throw() {
+        given().default_settings();
+        when().a_spawn_value_is_removed(1024);
+        then().no_exception_is_thrown();
     }
 
     @Test
@@ -78,6 +95,11 @@ public class GameSettingsBddTest extends ScenarioTest<GivenSettings, WhenSetting
         given().default_settings();
         when().a_spawn_probability_is_updated(2, 0.5);
         // Sum is now 0.5 + 0.1 = 0.6
+        when().the_configuration_is_validated();
+        then().an_illegal_state_exception_is_thrown();
+
+        // Slightly off 1.0 (e.g. 1.0001)
+        when().a_spawn_probability_is_updated(2, 0.9001);
         when().the_configuration_is_validated();
         then().an_illegal_state_exception_is_thrown();
     }

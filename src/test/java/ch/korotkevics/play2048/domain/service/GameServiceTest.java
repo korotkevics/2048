@@ -24,6 +24,8 @@ public class GameServiceTest extends ScenarioTest<GivenGameService, WhenGameServ
         given().a_game_service();
         when().a_new_game_is_started()
                 .and().a_move_is_made_in_direction(Direction.LEFT);
+        // We can't know the exact score because startNewGame spawns random tiles,
+        // but we can verify it was published.
         then().a_move_made_event_is_published();
     }
 

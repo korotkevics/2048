@@ -39,6 +39,11 @@ public class ThenEngine extends Stage<ThenEngine> {
         return this;
     }
 
+    public ThenEngine the_number_of_move_deltas_is(int expected) {
+        assertThat(lastResult.deltas()).hasSize(expected);
+        return this;
+    }
+
     public ThenEngine the_grid_is_of_size(int expected) {
         assertThat(lastResult.boardState().size()).isEqualTo(expected);
         return this;
@@ -83,6 +88,18 @@ public class ThenEngine extends Stage<ThenEngine> {
             }
         }
         assertThat(count).isEqualTo(expected);
+        return this;
+    }
+
+    public ThenEngine the_total_sum_of_tiles_is(int expected) {
+        int sum = 0;
+        int[][] grid = lastResult.boardState().grid();
+        for (int[] row : grid) {
+            for (int cell : row) {
+                sum += cell;
+            }
+        }
+        assertThat(sum).isEqualTo(expected);
         return this;
     }
 
