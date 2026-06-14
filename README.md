@@ -1,5 +1,13 @@
 # Play 2048
 
+<p align="center">
+  <a href="docs/image1.png"><img src="docs/image1.png" width="18%" /></a>
+  <a href="docs/image2.png"><img src="docs/image2.png" width="18%" /></a>
+  <a href="docs/image3.png"><img src="docs/image3.png" width="18%" /></a>
+  <a href="docs/image4.png"><img src="docs/image4.png" width="18%" /></a>
+  <a href="docs/image5.png"><img src="docs/image5.png" width="18%" /></a>
+</p>
+
 A 2048 game built using clean Hexagonal Architecture principles in Java/Spring Boot.
 
 To build and run the entire application stack execute `docker compose up --build` from the root directory; the game will be available at `http://localhost:85`.
