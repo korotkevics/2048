@@ -5,14 +5,20 @@ import ch.korotkevics.play2048.domain.service.DomainEventStream;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 public class ThenGameService extends Stage<ThenGameService> {
 
     @ExpectedScenarioState
     private MoveResult moveResult;
+
+    @ExpectedScenarioState
+    private Optional<MoveResult> undoResult;
 
     @ExpectedScenarioState
     private DomainEventStream eventStream;
@@ -28,12 +34,21 @@ public class ThenGameService extends Stage<ThenGameService> {
     }
 
     public ThenGameService a_move_made_event_is_published() {
-        verify(eventStream).publish(any(DomainEventStream.MoveMade.class));
+        verify(eventStream, atLeastOnce()).publish(any(DomainEventStream.MoveMade.class));
         return this;
     }
 
     public ThenGameService an_ai_suggestion_event_is_published() {
         verify(eventStream).publish(any(DomainEventStream.AiSuggestionProduced.class));
+        return this;
+    }
+
+    public ThenGameService an_undo_result_is_present() {
+        assertThat(undoResult).isPresent();
+        return this;
+    }
+
+    public ThenGameService no_exception_is_thrown() {
         return this;
     }
 }

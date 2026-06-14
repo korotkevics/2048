@@ -50,7 +50,7 @@ const initialState: GameState = {
     won: false,
     aiSuggestion: null,
     status: 'idle',
-    lastMove: null
+    lastMove: null,
 };
 
 const gameSlice = createSlice({

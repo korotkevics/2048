@@ -4,6 +4,192 @@
   "scenarios": [
     {
       "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
+      "testMethodName": "abandoning_game_clears_state",
+      "description": "abandoning game clears state",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game service",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game service"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 609791,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a new game is started",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a new game is started"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 262500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the game is abandoned",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the game is abandoned"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 37792,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "no exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "no exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 7000,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 1182541
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 1182541
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
+      "testMethodName": "auto_play_can_be_started_and_stopped",
+      "description": "auto play can be started and stopped",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game service",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game service"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 250667,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a new game is started",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a new game is started"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 122209,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "auto play is started",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "auto play is started"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 40458,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "auto play is stopped",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "auto play is stopped"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 12000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "no exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "no exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 6292,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 587417
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 587417
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
       "testMethodName": "making_a_move_publishes_event",
       "description": "making a move publishes event",
       "tagIds": [],
@@ -25,7 +211,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 304583,
+              "durationInNanos": 207250,
               "depth": 0,
               "parentFailed": false
             },
@@ -41,7 +227,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 118000,
+              "durationInNanos": 130416,
               "depth": 0,
               "parentFailed": false
             },
@@ -64,7 +250,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 191625,
+              "durationInNanos": 309375,
               "depth": 0,
               "parentFailed": false
             },
@@ -79,56 +265,420 @@
                   "value": "a move made event is published"
                 }
               ],
-              "status": "FAILED",
-              "durationInNanos": 397458,
+              "status": "PASSED",
+              "durationInNanos": 75792,
               "depth": 0,
               "parentFailed": false
             }
           ],
           "explicitArguments": [],
           "derivedArguments": [],
-          "status": "FAILED",
-          "errorMessage": "org.mockito.exceptions.verification.opentest4j.ArgumentsAreDifferent: \nArgument(s) are different! Wanted:\ndomainEventStream.publish(\n    \u003cany ch.korotkevics.play2048.domain.service.DomainEventStream.MoveMade\u003e\n);\n-\u003e at ch.korotkevics.play2048.domain.service.stages.ThenGameService.a_move_made_event_is_published(ThenGameService.java:31)\nActual invocations have different arguments:\ndomainEventStream.publish(\n    GameStarted[gameId\u003df172e76d-8cfb-4ab8-b116-d0861c4d3a6d, initialBoard\u003dBoardState{grid\u003d[[0, 0, 0, 0], [0, 0, 0, 0], [2, 0, 2, 0], [0, 0, 2, 2]]}]\n);\n-\u003e at ch.korotkevics.play2048.domain.service.GameService.startNewGame(GameService.java:31)\n",
-          "stackTrace": [
-            "ch.korotkevics.play2048.domain.service.stages.ThenGameService.a_move_made_event_is_published(ThenGameService.java:31)",
-            "ch.korotkevics.play2048.domain.service.stages.ThenGameService$ByteBuddy$HDGhTvfF.a_move_made_event_is_published$accessor$XFwsFfld(Unknown Source)",
-            "ch.korotkevics.play2048.domain.service.stages.ThenGameService$ByteBuddy$HDGhTvfF$auxiliary$QkbZLZ1I.call(Unknown Source)",
-            "ch.korotkevics.play2048.domain.service.stages.ThenGameService$ByteBuddy$HDGhTvfF.a_move_made_event_is_published(Unknown Source)",
-            "ch.korotkevics.play2048.domain.service.GameServiceTest.making_a_move_publishes_event(GameServiceTest.java:25)",
-            "java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)",
-            "org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)",
-            "org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)",
-            "org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)",
-            "org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)",
-            "org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)",
-            "org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)",
-            "org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)",
-            "org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)",
-            "java.base/java.util.ArrayList.forEach(ArrayList.java:1604)",
-            "org.testng.TestRunner.privateRun(TestRunner.java:739)",
-            "org.testng.TestRunner.run(TestRunner.java:614)",
-            "org.testng.SuiteRunner.runTest(SuiteRunner.java:421)",
-            "org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)",
-            "org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)",
-            "org.testng.SuiteRunner.run(SuiteRunner.java:312)",
-            "org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)",
-            "org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)",
-            "org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)",
-            "org.testng.TestNG.runSuitesLocally(TestNG.java:1208)",
-            "org.testng.TestNG.runSuites(TestNG.java:1112)",
-            "org.testng.TestNG.run(TestNG.java:1079)",
-            "org.pitest.testng.TestNGTestUnit.executeInCurrentLoader(TestNGTestUnit.java:90)",
-            "org.pitest.testng.TestNGTestUnit.execute(TestNGTestUnit.java:73)",
-            "org.pitest.mutationtest.execute.MutationTimeoutDecorator.lambda$createRunnable$0(MutationTimeoutDecorator.java:81)",
-            "java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:545)",
-            "java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)",
-            "java.base/java.lang.Thread.run(Thread.java:1447)"
-          ],
-          "durationInNanos": 1498750
+          "status": "SUCCESS",
+          "durationInNanos": 857083
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 1498750
+      "durationInNanos": 857083
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
+      "testMethodName": "requesting_ai_suggestion_publishes_event",
+      "description": "requesting ai suggestion publishes event",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game service",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game service"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 216709,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an ai that suggests",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an ai that suggests"
+                },
+                {
+                  "value": "UP",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "UP"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 185083,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a new game is started",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a new game is started"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 117000,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an ai suggestion is requested",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an ai suggestion is requested"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 67750,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an ai suggestion event is published",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an ai suggestion event is published"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 59833,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 788833
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 788833
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
+      "testMethodName": "starting_a_new_game_generates_id_and_notifies",
+      "description": "starting a new game generates id and notifies",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game service",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game service"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 224625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a new game is started",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a new game is started"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 112500,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a game id is generated",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game id is generated"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 15333,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a game started event is published",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game started event is published"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 51083,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 515583
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 515583
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
+      "testMethodName": "undoing_a_move_restores_previous_state",
+      "description": "undoing a move restores previous state",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game service",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game service"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 209583,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a new game is started",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a new game is started"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 259333,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is made in direction",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is made in direction"
+                },
+                {
+                  "value": "LEFT",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "LEFT"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 382834,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an undo is requested",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an undo is requested"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 108875,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "an undo result is present",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "an undo result is present"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 19292,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move made event is published",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move made event is published"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 68458,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 1286500
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 1286500
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.service.GameServiceTest",
+      "testMethodName": "updating_settings_saves_to_repository",
+      "description": "updating settings saves to repository",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game service",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game service"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 317708,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "settings are updated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "settings are updated"
+                },
+                {
+                  "value": "ch.korotkevics.play2048.domain.ai.UserSettings@7ee0597f",
+                  "argumentInfo": {
+                    "argumentName": "userSettings",
+                    "formattedValue": "ch.korotkevics.play2048.domain.ai.UserSettings@7ee0597f"
+                  }
+                },
+                {
+                  "value": "ch.korotkevics.play2048.domain.engine.GameSettings@1d9796a5",
+                  "argumentInfo": {
+                    "argumentName": "gameSettings",
+                    "formattedValue": "ch.korotkevics.play2048.domain.engine.GameSettings@1d9796a5"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 196334,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "no exception is thrown",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "no exception is thrown"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 8042,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 676083
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 676083
     }
   ],
   "tagMap": {}

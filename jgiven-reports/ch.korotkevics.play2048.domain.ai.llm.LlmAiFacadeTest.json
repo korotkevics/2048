@@ -32,7 +32,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 259742625,
+              "durationInNanos": 271288583,
               "depth": 0,
               "parentFailed": false
             },
@@ -55,7 +55,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 524458,
+              "durationInNanos": 634541,
               "depth": 0,
               "parentFailed": false
             },
@@ -71,7 +71,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 921959,
+              "durationInNanos": 1248166,
               "depth": 0,
               "parentFailed": false
             },
@@ -94,7 +94,7 @@
                 }
               ],
               "status": "FAILED",
-              "durationInNanos": 18987666,
+              "durationInNanos": 20637583,
               "depth": 0,
               "parentFailed": false
             }
@@ -105,10 +105,10 @@
           "errorMessage": "java.lang.AssertionError: \nExpecting Optional to contain:\n  RIGHT\nbut was empty.",
           "stackTrace": [
             "ch.korotkevics.play2048.domain.ai.stages.ThenAi.the_suggested_direction_is(ThenAi.java:27)",
-            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$IXCdhMiS.the_suggested_direction_is$accessor$temjErZj(Unknown Source)",
-            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$IXCdhMiS$auxiliary$kQ478W2e.call(Unknown Source)",
-            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$IXCdhMiS.the_suggested_direction_is(Unknown Source)",
-            "ch.korotkevics.play2048.domain.ai.llm.LlmAiFacadeTest.llm_ai_delegates_to_client(LlmAiFacadeTest.java:25)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$vLrCqJFu.the_suggested_direction_is$accessor$mqAcPOkE(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$vLrCqJFu$auxiliary$YJR4IHSj.call(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.stages.ThenAi$ByteBuddy$vLrCqJFu.the_suggested_direction_is(Unknown Source)",
+            "ch.korotkevics.play2048.domain.ai.llm.LlmAiFacadeTest.llm_ai_delegates_to_client(LlmAiFacadeTest.java:26)",
             "java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)",
             "org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)",
             "org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)",
@@ -138,11 +138,11 @@
             "java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)",
             "java.base/java.lang.Thread.run(Thread.java:1447)"
           ],
-          "durationInNanos": 289428292
+          "durationInNanos": 304396708
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 289428292
+      "durationInNanos": 304396708
     }
   ],
   "tagMap": {}

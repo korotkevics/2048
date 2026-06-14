@@ -19,4 +19,9 @@ public class WhenEngine extends Stage<WhenEngine> {
         lastResult = engine.move(direction);
         return this;
     }
+
+    public WhenEngine a_move_is_simulated(Direction direction) {
+        lastResult = engine.simulateMove(direction);
+        return this;
+    }
 }

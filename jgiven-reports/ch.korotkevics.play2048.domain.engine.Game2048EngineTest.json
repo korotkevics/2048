@@ -4,6 +4,520 @@
   "scenarios": [
     {
       "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "complex_merges_and_gaps_are_handled",
+      "description": "complex merges and gaps are handled",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "2, 0, 2, 4, 4, 4, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 0, 2, 4, 4, 4, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 313667,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is simulated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is simulated"
+                },
+                {
+                  "value": "LEFT",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "LEFT"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 194375,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the grid is",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the grid is"
+                },
+                {
+                  "value": "4, 4, 0, 0, 8, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "4, 4, 0, 0, 8, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 133791,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the score gained is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the score gained is"
+                },
+                {
+                  "value": "28",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "28"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 76958,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 976958
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 976958
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "game_over_condition_is_detected",
+      "description": "game over condition is detected",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "2, 4, 2, 4, 4, 2, 4, 2, 2, 4, 2, 4, 4, 2, 4, 2",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 4, 2, 4, 4, 2, 4, 2, 2, 4, 2, 4, 4, 2, 4, 2"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 115666,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is simulated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is simulated"
+                },
+                {
+                  "value": "RIGHT",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "RIGHT"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 75833,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the game is over",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the game is over"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 13208,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 331292
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 331292
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "move_spawns_a_new_tile",
+      "description": "move spawns a new tile",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 114250,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is made",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is made"
+                },
+                {
+                  "value": "DOWN",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "DOWN"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 118625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the board has moved",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the board has moved"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 14875,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the number of tiles is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the number of tiles is"
+                },
+                {
+                  "value": "2",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "2"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 84167,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 488250
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 488250
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "no_movement_returns_moved_false",
+      "description": "no movement returns moved false",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "2, 4, 8, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 4, 8, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 87875,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is made",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is made"
+                },
+                {
+                  "value": "UP",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "UP"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 64375,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the board has not moved",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the board has not moved"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 10291,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the score gained is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the score gained is"
+                },
+                {
+                  "value": "0",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 64625,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 367875
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 367875
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "simulate_move_does_not_spawn_a_new_tile",
+      "description": "simulate move does not spawn a new tile",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 103625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is simulated",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is simulated"
+                },
+                {
+                  "value": "DOWN",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "DOWN"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 72375,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the board has moved",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the board has moved"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9625,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the number of tiles is",
+              "words": [
+                {
+                  "value": "and",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the number of tiles is"
+                },
+                {
+                  "value": "1",
+                  "argumentInfo": {
+                    "argumentName": "expected",
+                    "formattedValue": "1"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 60125,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 369750
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 369750
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
       "testMethodName": "tiles_are_merged_correctly",
       "description": "tiles are merged correctly",
       "tagIds": [],
@@ -32,7 +546,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 2732500,
+              "durationInNanos": 89917,
               "depth": 0,
               "parentFailed": false
             },
@@ -55,7 +569,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 233833,
+              "durationInNanos": 90166,
               "depth": 0,
               "parentFailed": false
             },
@@ -71,7 +585,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 17072916,
+              "durationInNanos": 39542,
               "depth": 0,
               "parentFailed": false
             },
@@ -94,7 +608,7 @@
                 }
               ],
               "status": "PASSED",
-              "durationInNanos": 1069792,
+              "durationInNanos": 69500,
               "depth": 0,
               "parentFailed": false
             }
@@ -102,11 +616,94 @@
           "explicitArguments": [],
           "derivedArguments": [],
           "status": "SUCCESS",
-          "durationInNanos": 28357166
+          "durationInNanos": 416167
         }
       ],
       "casesAsTable": false,
-      "durationInNanos": 28357166
+      "durationInNanos": 416167
+    },
+    {
+      "className": "ch.korotkevics.play2048.domain.engine.Game2048EngineTest",
+      "testMethodName": "winning_condition_is_detected",
+      "description": "winning condition is detected",
+      "tagIds": [],
+      "explicitParameters": [],
+      "derivedParameters": [],
+      "scenarioCases": [
+        {
+          "caseNr": 1,
+          "steps": [
+            {
+              "name": "a game from grid",
+              "words": [
+                {
+                  "value": "Given",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a game from grid"
+                },
+                {
+                  "value": "1024, 1024, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0",
+                  "argumentInfo": {
+                    "argumentName": "grid",
+                    "formattedValue": "1024, 1024, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 81292,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "a move is made",
+              "words": [
+                {
+                  "value": "When",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "a move is made"
+                },
+                {
+                  "value": "LEFT",
+                  "argumentInfo": {
+                    "argumentName": "direction",
+                    "formattedValue": "LEFT"
+                  }
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 73417,
+              "depth": 0,
+              "parentFailed": false
+            },
+            {
+              "name": "the game is won",
+              "words": [
+                {
+                  "value": "Then",
+                  "isIntroWord": true
+                },
+                {
+                  "value": "the game is won"
+                }
+              ],
+              "status": "PASSED",
+              "durationInNanos": 9666,
+              "depth": 0,
+              "parentFailed": false
+            }
+          ],
+          "explicitArguments": [],
+          "derivedArguments": [],
+          "status": "SUCCESS",
+          "durationInNanos": 267875
+        }
+      ],
+      "casesAsTable": false,
+      "durationInNanos": 267875
     }
   ],
   "tagMap": {}

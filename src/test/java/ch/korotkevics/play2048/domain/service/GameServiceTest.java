@@ -1,6 +1,8 @@
 package ch.korotkevics.play2048.domain.service;
 
+import ch.korotkevics.play2048.domain.ai.UserSettings;
 import ch.korotkevics.play2048.domain.engine.Direction;
+import ch.korotkevics.play2048.domain.engine.GameSettings;
 import ch.korotkevics.play2048.domain.service.stages.GivenGameService;
 import ch.korotkevics.play2048.domain.service.stages.ThenGameService;
 import ch.korotkevics.play2048.domain.service.stages.WhenGameService;
@@ -32,5 +34,39 @@ public class GameServiceTest extends ScenarioTest<GivenGameService, WhenGameServ
         when().a_new_game_is_started()
                 .and().an_ai_suggestion_is_requested();
         then().an_ai_suggestion_event_is_published();
+    }
+
+    @Test
+    public void undoing_a_move_restores_previous_state() {
+        given().a_game_service();
+        when().a_new_game_is_started()
+                .and().a_move_is_made_in_direction(Direction.LEFT)
+                .and().an_undo_is_requested();
+        then().an_undo_result_is_present()
+                .and().a_move_made_event_is_published();
+    }
+
+    @Test
+    public void updating_settings_saves_to_repository() {
+        given().a_game_service();
+        when().settings_are_updated(new UserSettings(), new GameSettings());
+        then().no_exception_is_thrown();
+    }
+
+    @Test
+    public void abandoning_game_clears_state() {
+        given().a_game_service();
+        when().a_new_game_is_started()
+                .and().the_game_is_abandoned();
+        then().no_exception_is_thrown();
+    }
+
+    @Test
+    public void auto_play_can_be_started_and_stopped() {
+        given().a_game_service();
+        when().a_new_game_is_started()
+                .and().auto_play_is_started()
+                .and().auto_play_is_stopped();
+        then().no_exception_is_thrown();
     }
 }

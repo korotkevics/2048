@@ -32,7 +32,6 @@ function App() {
       const startResult = await startNewGame();
       dispatch(setGameId(clientId));
       
-      // Immediately execute the move
       const moveResult = await makeMove(direction);
       if (moveResult) {
         dispatch(updateGameState(moveResult));
